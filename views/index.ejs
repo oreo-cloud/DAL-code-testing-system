@@ -20,6 +20,7 @@
             color: white;
             font-size: 38px;
             margin: auto;
+            border-radius: 10px;
         }
 
         .side_bar{
@@ -38,6 +39,7 @@
             padding-right: 20px;
             padding-bottom: 20px;
             overflow-y: auto;  /* 新增此行來添加滾輪 */
+            border-radius: 10px;
         }
 
         h1 {
@@ -47,16 +49,20 @@
         .buttons {
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
             margin-top: 20px; /* 按鈕上方間距 */
         }
 
         button {
+            
+            border-radius: 10px;
             margin: 10px; /* 按鈕間距 */
             padding: 10px 20px; /* 按鈕內邊距 */
             font-size: 16px; /* 文字大小 */
             cursor: pointer; /* 鼠標樣式 */
             display: inline-block; /* 確保按鈕能夠正確排列 */
-            width: auto; /* 自動寬度 */
+            width: 100%; /* 自動寬度 */
         }
 
         #terminal {
