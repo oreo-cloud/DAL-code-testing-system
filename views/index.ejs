@@ -6,15 +6,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            text-align: center; /* 置中頁面內容 */
-            font-family: Arial, sans-serif; /* 字體樣式 */
+            background-color: rgba(0, 0, 0, 0.4);
+            overflow: hidden;  /* 新增此行來隱藏整個頁面的滾軸 */
         }
+
+        .nav-bar{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 10vh;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 38px;
+            margin: auto;
+        }
+
+        .side_bar{
+            position: fixed;
+            height: 75%;
+            width: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            text-align: center;
+            color: white;
+            font-size: 20px;
+            position: fixed;
+            top: 15vh;
+            left: 5;
+            padding-top: 2vh;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-bottom: 20px;
+            overflow-y: auto;  /* 新增此行來添加滾輪 */
+        }
+
         h1 {
             margin-top: 50px; /* 標題上方間距 */
         }
+
         .buttons {
+            display: flex;
+            flex-direction: column;
             margin-top: 20px; /* 按鈕上方間距 */
         }
+
         button {
             margin: 10px; /* 按鈕間距 */
             padding: 10px 20px; /* 按鈕內邊距 */
@@ -23,6 +58,25 @@
             display: inline-block; /* 確保按鈕能夠正確排列 */
             width: auto; /* 自動寬度 */
         }
+
+        #terminal {
+            position: relative;
+            width: 800px;
+            height: 500px; /* 固定高度，或根據需要調整 */
+            background-color: rgba(255, 255, 255, 1);
+            left: 13vw;
+            top: 4vh;
+        }
+
+        #file{
+            position: relative;
+            width: 300px;
+            height: 500px; /* 固定高度，或根據需要調整 */
+            background-color: rgba(255, 255, 255, 1);
+            left: 75vw;
+            top: -74vh;
+        }
+
         /* 媒體查詢：當螢幕尺寸小於或等於600px時 */
         @media (max-width: 600px) {
             h1 {
@@ -40,12 +94,21 @@
     </style>
 </head>
 <body>
-    <h1>Data Struct Testing</h1>
-    <div class="buttons">
-        <button onclick="location.href='/DS/DEMOa'">DEMOa</button>
-        <button onclick="location.href='/DS/DEMOb'">DEMOb</button>
-        <button onclick="location.href='/DS/QUIZa'">QUIZa</button>
-        <button onclick="location.href='/DS/QUIZb'">QUIZb</button>
+    <div class="nav-bar">Data Structure Testing</div>
+    <div class="side_bar">
+        <span>Homework</span>
+
+        <div class="buttons">
+            <button onclick="location.href='/DS/DEMOa'">DEMOa</button>
+            <button onclick="location.href='/DS/DEMOb'">DEMOb</button>
+            <button onclick="location.href='/DS/QUIZa'">QUIZa</button>
+            <button onclick="location.href='/DS/QUIZb'">QUIZb</button>
+        </div>
+
     </div>
+
+    <div id="terminal"></div>
+    <div id="file"></div>
+    
 </body>
 </html>
