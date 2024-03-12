@@ -20,7 +20,7 @@ app.get('/DS/:project', (req, res) => {
     const project = req.params.project;
     const check = new RegExp('^(DEMO|QUIZ)[ab].cpp$');
     const exe_program = project.split('.')[0];
-    exec( `cd ./DS_source && g++ -o ../DS_exe/${exe_program} ${project}`, ( error, stdout, stderr ) => {
+    exec( `cd ./DS_source && g++ -o ../DS_exe/${exe_program} ${project}.cpp`, ( error, stdout, stderr ) => {
         // 從DS_sourcw編譯程式碼，並放到DS_exe資料夾
         if ( error ) {
             console.log( `error: ${error}` );
