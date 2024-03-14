@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
     <meta charset="UTF-8">
     <title>Data Struct</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
         body {
             background-color: rgba(0, 0, 0, 0.4);
-            overflow: hidden;  /* 新增此行來隱藏整個頁面的滾軸 */
+            overflow: hidden;
+            /* 新增此行來隱藏整個頁面的滾軸 */
         }
 
-        .nav-bar{
+        .nav-bar {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -23,7 +26,7 @@
             border-radius: 10px;
         }
 
-        .side_bar{
+        .side_bar {
             position: fixed;
             height: 75%;
             width: auto;
@@ -38,12 +41,14 @@
             padding-left: 20px;
             padding-right: 20px;
             padding-bottom: 20px;
-            overflow-y: auto;  /* 新增此行來添加滾輪 */
+            overflow-y: auto;
+            /* 新增此行來添加滾輪 */
             border-radius: 10px;
         }
 
         h1 {
-            margin-top: 50px; /* 標題上方間距 */
+            margin-top: 50px;
+            /* 標題上方間距 */
         }
 
         .buttons {
@@ -51,54 +56,84 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin-top: 20px; /* 按鈕上方間距 */
+            margin-top: 20px;
+            /* 按鈕上方間距 */
         }
 
         button {
-            
+
             border-radius: 10px;
-            margin: 10px; /* 按鈕間距 */
-            padding: 10px 20px; /* 按鈕內邊距 */
-            font-size: 16px; /* 文字大小 */
-            cursor: pointer; /* 鼠標樣式 */
-            display: inline-block; /* 確保按鈕能夠正確排列 */
-            width: 100%; /* 自動寬度 */
+            margin: 10px;
+            /* 按鈕間距 */
+            padding: 10px 20px;
+            /* 按鈕內邊距 */
+            font-size: 16px;
+            /* 文字大小 */
+            cursor: pointer;
+            /* 鼠標樣式 */
+            display: inline-block;
+            /* 確保按鈕能夠正確排列 */
+            width: 100%;
+            /* 自動寬度 */
+        }
+
+        .container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            height: 90vh;
+        }
+
+        .container>div:first-child {
+            margin-right: 30px;
+            /* 或根據需要調整 */
         }
 
         #terminal {
             position: relative;
             width: 800px;
-            height: 500px; /* 固定高度，或根據需要調整 */
+            height: 440px;
+            /* 固定高度，或根據需要調整 */
             background-color: rgba(255, 255, 255, 1);
-            left: 13vw;
-            top: 4vh;
+            left: 3vw;
+            top: -1vh;
         }
 
-        #file{
+        #file {
             position: relative;
-            width: 300px;
-            height: 500px; /* 固定高度，或根據需要調整 */
+            width: 100px;
+            height: 440px;
+            /* 固定高度，或根據需要調整 */
             background-color: rgba(255, 255, 255, 1);
-            left: 75vw;
-            top: -74vh;
+            left: 5vw;
+            top: -1vh;
         }
 
         /* 媒體查詢：當螢幕尺寸小於或等於600px時 */
         @media (max-width: 600px) {
             h1 {
-                margin-top: 20px; /* 減少標題上方間距 */
+                margin-top: 20px;
+                /* 減少標題上方間距 */
             }
+
             .buttons {
-                margin-top: 10px; /* 減少按鈕上方間距 */
+                margin-top: 10px;
+                /* 減少按鈕上方間距 */
             }
+
             button {
-                margin: 5px; /* 減少按鈕間距 */
-                padding: 5px 10px; /* 減少按鈕內邊距 */
-                font-size: 14px; /* 減小文字大小 */
+                margin: 5px;
+                /* 減少按鈕間距 */
+                padding: 5px 10px;
+                /* 減少按鈕內邊距 */
+                font-size: 14px;
+                /* 減小文字大小 */
             }
         }
     </style>
 </head>
+
 <body>
     <div class="nav-bar">Data Structure Testing</div>
     <div class="side_bar">
@@ -113,8 +148,22 @@
 
     </div>
 
-    <div id="terminal"></div>
-    <div id="file"></div>
-    
+    <div class="container">
+        <div id="terminal">
+            <% if (typeof project !=='undefined' ) { %>
+                <!-- 如果有project参数传入，显示它 -->
+                <p>Current Project: <%= project %></p>
+            <% } else { %>
+                <!-- 如果没有project参数传入，显示默认文本 -->
+                <p>Welcome to the Data Structure Testing Platform.</p>
+            <% } %>
+        </div>
+        <div id="file"></div>
+    </div>
+
+
+
+
 </body>
+
 </html>

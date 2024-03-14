@@ -5,6 +5,11 @@ const WebSocket = require('ws');
 const pty = require('node-pty');
 const { exec } = require('child_process');
 
+// find path
+const fs = require('fs');
+const path = require('path');
+
+
 const port = 3000;
 
 // 解析 JSON 請求體
@@ -16,33 +21,20 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
-app.get('/DS/:project', (req, res) => {
+
+// project 有沒有出現在 ./DS_exe 資料夾中
+// 如果沒有就送出invalid project
+// 如果有就送出xterm.ejs
+app.post('/DS/:project', (req, res) => {
     const project = req.params.project;
-    const check = new RegExp('^(DEMO|QUIZ)[ab].cpp$');
-    const exe_program = project.split('.')[0];
-    exec( `cd ./DS_source && g++ -o ../DS_exe/${exe_program} ${project}.cpp`, ( error, stdout, stderr ) => {
-        // 從DS_sourcw編譯程式碼，並放到DS_exe資料夾
-        if ( error ) {
-            console.log( `error: ${error}` );
-            // res.send(  )
+    const filePath = path.join( __dirname, 'DS_exe', project );
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            res.send('Invalid project');
+        } else {
+            res.render('index', { project: project });
         }
-
-        else if ( stderr ) {
-            console.log( `stderr: ${stderr}` ) ;
-        } // else if()
-        
-        else {
-            // compiled success
-            console.log( "success" ) ;
-        } // else()
-
     });
-
-    if (check.test(project)) {
-        res.render('xterm', { project: project })
-    } else {
-        res.send('Invalid project');
-    }
 });
 
 // 使用http模塊創建伺服器，並將Express應用作為請求處理器
