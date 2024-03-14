@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 // project 有沒有出現在 ./DS_exe 資料夾中
 // 如果沒有就送出invalid project
 // 如果有就送出xterm.ejs
-app.post('/DS/:project', (req, res) => {
+app.get('/DS/:project', (req, res) => {
     const project = req.params.project;
     const filePath = path.join( __dirname, 'DS_exe', project );
     fs.access(filePath, fs.constants.F_OK, (err) => {
