@@ -62,7 +62,7 @@ body {
 .output_file {
     position: fixed;
     height: 75%;
-    width: 10%;
+    width: 13%;
     background-color: rgba(0, 0, 0, 0.6);
     text-align: center;
     display: flex;
@@ -79,7 +79,7 @@ body {
     padding-left: 20px;
     padding-right: 20px;
     padding-bottom: 20px;
-    overflow-y: auto;
+    /*overflow-y: auto;*/
     /* 新增此行來添加滾輪 */
     border-radius: 10px;
 }
@@ -93,10 +93,128 @@ body {
 
 .testing {
     width: auto;
-    height: 30px;
-    position: fixed;
-    top: 80%;
-    left: 45%;
+    position: absolute;
+    bottom: 5%;
     cursor: pointer;
+}
 
+.button-55 {
+  align-self: center;
+  background-color: #fff;
+  background-image: none;
+  background-position: 0 90%;
+  background-repeat: repeat no-repeat;
+  background-size: 4px 3px;
+  border-radius: 15px 225px 255px 15px 15px 255px 225px 15px;
+  border-style: solid;
+  border-width: 2px;
+  box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px;
+  box-sizing: border-box;
+  color: #41403e;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Neucha, sans-serif;
+  font-size: 1rem;
+  line-height: 23px;
+  outline: none;
+  margin: 3px;
+  padding: .75rem;
+  text-decoration: none;
+  transition: all 235ms ease-in-out;
+  border-bottom-left-radius: 15px 255px;
+  border-bottom-right-radius: 225px 15px;
+  border-top-left-radius: 255px 15px;
+  border-top-right-radius: 15px 225px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: 130px;
+  max-width: 130px;
+  overflow: hidden;  /* overflow 屬性來處理超出最大寬度的文字 */
+  text-overflow: ellipsis; /* 超出最大寬度時，會使用省略號（...）來表示超出的部分 */
+  white-space: nowrap; /* 確保文字在一行內顯示，而不會換行 */
+}
+
+.button-55:hover {
+  box-shadow: rgba(0, 0, 0, .3) 2px 8px 8px -5px;
+  transform: translate3d(0, 2px, 0);
+}
+
+.button-55:focus {
+  box-shadow: rgba(0, 0, 0, .3) 2px 8px 4px -6px;
+}
+
+.button-19 {
+    appearance: button;
+    background-color: #1899D6;
+    border: solid transparent;
+    border-radius: 16px;
+    border-width: 0 0 4px;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-block;
+    font-family: din-round, sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .8px;
+    line-height: 20px;
+    margin: 10px;
+    outline: none;
+    overflow: visible;
+    padding: 13px 16px;
+    text-align: center;
+    text-transform: uppercase;
+    touch-action: manipulation;
+    transform: translateZ(0);
+    transition: filter .2s;
+    user-select: none;
+    -webkit-user-select: none;
+    vertical-align: middle;
+    white-space: nowrap;
+    width: 122px;
+    height: 96px;
+    clip-path: polygon(82% 70%, 62% 70%, 62% 100%, 42% 100%, 42% 70%, 22% 70%, 52% 24%);
+}
+
+.button-19:after {
+    background-clip: padding-box;
+    background-color: #1CB0F6;
+    border: solid transparent;
+    border-radius: 16px;
+    border-width: 0 0 4px;
+    bottom: -4px;
+    content: "";
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: -1;
+}
+
+.button-19:main,
+.button-19:focus {
+    user-select: auto;
+}
+
+.button-19:hover:not(:disabled) {
+    filter: brightness(1.1);
+    -webkit-filter: brightness(1.1);
+    animation: heartBeat;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+
+.button-19:disabled {
+    cursor: auto;
+}
+
+.button-19:active {
+    border-width: 4px 0 0;
+    background: none;
+}
+
+.file_preview {
+    width: 100px;
+    height: 100px;
 }

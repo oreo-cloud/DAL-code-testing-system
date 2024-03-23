@@ -36,4 +36,7 @@ YH 原文
 
 Data Structure Display System (DSDS)
 
+帳號密碼放在shadow.txt(gitignore)
+
+
 

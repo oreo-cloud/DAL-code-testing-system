@@ -32,6 +32,15 @@ window.addEventListener('resize', function () {
     // term.fit(); // 假設使用了fit插件
 });
 
+// 獲取按鈕元素
+let button19 = document.querySelector('.button-19');
+
+// 為按鈕添加 'animationend' 事件監聽器
+button19.addEventListener('animationend', () => {
+    // 當動畫完成後，移除 'flip' 類別
+    button19.classList.remove('animate__flip');
+});
+
 function test_click() {
     console.log("click!");
     fetch('/DS/get_output', {
@@ -39,22 +48,65 @@ function test_click() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ "id": "6b192716-7466-45b7-a415-c501bfbc39221711092753209" })
+        body: JSON.stringify({ "id": "e9e26000-deea-449e-9e7a-d86c4919c9201711101373526" })
     })
     .then(response => response.json())
     .then(data => {
         const out = JSON.parse(data.filename);
-        console.log("id,out:");
+        console.log("id:");
         console.log(id);
+        console.log("out:");
         console.log(out);
+    
+        let buttonContainer = document.getElementById('buttonContainer');
+        while (buttonContainer.firstChild) {
+            buttonContainer.removeChild(buttonContainer.firstChild);
+        }
+    
+        // 遍歷每個檔案名稱並為每個檔案創建一個按鈕
+        out.forEach((filename, index) => {
+            setTimeout(() => {
+                const newButton = document.createElement('button');
+                newButton.id = filename;
+                newButton.textContent = filename;
+                newButton.title = filename;  // 懸停在按鈕上時，會顯示完整的文本內容
+                newButton.classList.add('button-55', 'animate__animated','animate__fadeIn');
+                // 為按鈕添加 onclick 屬性
+                newButton.setAttribute('onclick', `get_file_content('${filename}')`);
+        
+                // 將新的按鈕添加到 DOM 中
+                buttonContainer.appendChild(newButton);
+            }, index * 300);  // 每個按鈕的創建被延遲了 index * 300 毫秒, index=1,2,3,...
+        });
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
 
-        // 創建一個新的按鈕並將 filename 屬性的值設置為該按鈕的文本
-        const newButton = document.createElement('button');
-        newButton.textContent = out;
+function get_file_content(filename) {
+    console.log("preview!");
+    fetch('/DS/get_file_content', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ "id": "e9e26000-deea-449e-9e7a-d86c4919c9201711101373526", "filename": filename })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // 獲取卡片元素
+        
+        let card = document.querySelector('#previewfile');
+        let cardTitle = card.querySelector('.card-title');
+        let cardText = card.querySelector('.card-text');
 
-        // 將新的按鈕添加到 DOM 中
-        const buttonContainer = document.getElementById('buttonContainer');
-        buttonContainer.appendChild(newButton);
+        // 設定卡片的標題和內容
+        cardTitle.textContent = filename;
+        cardText.textContent = data.content;
+
+        // 顯示卡片
+        card.style.display = 'block';
     })
     .catch((error) => {
         console.error('Error:', error);

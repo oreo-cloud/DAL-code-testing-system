@@ -15,6 +15,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
         crossorigin="anonymous"></script>
+    <!--動畫-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 </head>
 
 <body>
@@ -34,11 +36,19 @@
             <div class="output_file">
                 <span>output file</span>
                 <div id="buttonContainer"></div>
+
+                <button class="button-19 testing animate__animated animate__flip" onclick="test_click()" title="click to show the output file"></button>
+                <span style="position: absolute; bottom: 1%; color: #1899D6;">show the output file</span>
             </div>
         </div>
     </div>
 
-    <button class="testing" onclick="test_click()"> 測式用按鈕 </button>
+    <div class="card file_preview" id="previewfile" style="display: none;">
+        <div class="card-body">
+          <h5 class="card-title"></h5>
+          <p class="card-text"></p>
+        </div>
+    </div>
 
     <script>
         let homework = '<%= homework %>';

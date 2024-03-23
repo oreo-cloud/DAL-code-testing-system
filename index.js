@@ -111,13 +111,72 @@ app.post('/DS/get_output', (req, res) => {
 
 });
 
+app.post('/DS/get_file_content', (req, res) => {
+    // 前端傳送 { "id": "132138434613", "filename": "output1.txt" }
+    // 這裡要讀取檔案內容並傳給前端
+    const id = req.body.id;
+    const filename = req.body.filename;
+    console.log("id,filename");
+    console.log(id);
+    console.log(filename);
+    const filePath = path.join(__dirname, 'exestation', id, filename);
+
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            res.send('Invalid id or filename in get_file_content');
+        } else {
+            fs.readFile(filePath, 'utf8', (err, data) => {
+                if (err) {
+                    res.send('Error reading file');
+                } else {
+                    res.send({ content: data });
+                }
+            });
+        }
+    });
+});
+
 // 實做一個staff only route 
 // 1. 只能用url進入
 // 2. 進入後會渲染staffonly.ejs
 app.get('/staffonly', (req, res) => {
-    console.log( )
+    console.log( );
     res.render('staffonly');
 });
+
+// 登入路由
+// 設置 /DS/login 路由來處理 POST 請求
+app.post('/DS/login', (req, res) => {
+    const { username, password } = req.body;
+
+    // 讀取 shadow.txt
+    const shadowPath = path.join(__dirname, 'shadow.txt');
+    fs.readFile(shadowPath, 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ success: false, message: '無法讀取驗證資料' });
+        }
+        
+        // 分析檔案內容以獲取用戶名和密碼
+        const [validUsername, validPassword] = data.trim().split(':');
+
+        // 執行驗證過程
+        if (username === validUsername && password === validPassword) {
+            // 驗證成功
+            res.json({ success: true });
+        } else {
+            // 驗證失敗
+            res.json({ success: false, message: '用戶名或密碼錯誤' });
+        }
+    });
+});
+
+// upload.ejs的路由
+app.get('/upload', (req, res) => {
+    res.render('upload'); // 假定您有一個upload.ejs檔案
+});
+
+
 
 // 使用http模塊創建伺服器，並將Express應用作為請求處理器
 const server = http.createServer(app);
