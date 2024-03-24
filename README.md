@@ -5,13 +5,13 @@ Data Structure Display System (DSDS)
 
 1. 創建DS_exe, DS_source, exestation
 2. 建立.env 內部包含 session secret, account, password, promises queue max value
-   # session secret
+   #session secret
    secret = 
 
-   # password
+   #password
    account = 
    password = 
    
-   # number for async queue at one time
+   #number for async queue at one time
    NUMBER_OF_CONCURRENT_TASKS = 
 
