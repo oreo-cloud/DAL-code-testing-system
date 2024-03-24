@@ -39,7 +39,7 @@ const inputfile = JSON.parse(decodedJson);
 const input_file = document.getElementById('input');
 
 for ( const file of inputfile ) {
-    var file_span = document.createElement('span');
+    var file_span = document.createElement('li');
     file_span.className = 'file';
     file_span.innerText = file;
     input_file.appendChild(file_span);

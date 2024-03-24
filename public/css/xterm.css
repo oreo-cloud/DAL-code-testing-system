@@ -32,7 +32,7 @@ body {
     text-align: center;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: start;
     justify-content: flex-start;
     color: white;
     font-family: din-round, sans-serif;
@@ -43,7 +43,6 @@ body {
     padding-top: 2vh;
     padding-left: 20px;
     padding-right: 20px;
-    padding-bottom: 20px;
     overflow-y: auto;
     /* 新增此行來添加滾輪 */
     border-radius: 10px;
@@ -58,6 +57,27 @@ body {
     /* 固定高度，或根據需要調整 */
     padding-top: 20px;
 }
+
+/* 滾動條軌道 */
+::-webkit-scrollbar-track {
+  background-color: rgba(241, 241, 241, 0);
+}
+
+/* 滾動條本身 */
+::-webkit-scrollbar {
+  width: 5px; / 滾動條的寬度 /
+}
+
+/* 滾動條上的滑塊 */
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 5px; / 使滑塊的角變圓 /
+}
+
+/* 當滑過滑塊時的顏色變化 */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
 
 .output_file {
     position: fixed;
@@ -241,11 +261,10 @@ body {
 }
 
 .file{
-    height: 10vh;
-    padding-top: 3vh;
+    padding-top: 1.5vh;
     transition: background-color 0.3s, transform 0.3s, filter 0.3s;
     z-index: 10;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
     font-weight: bold;
 }
@@ -255,4 +274,9 @@ body {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+}
+
+#discription{
+    font-size: 20px;
+    font-weight: bold;
 }
