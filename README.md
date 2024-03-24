@@ -7,14 +7,17 @@ Data Structure Display System (DSDS)
 2. 建立.env 內部包含 session secret, account, password, promises queue max value
    
    #session secret
+
    secret = 
 
    #password
+   
    account =
    
    password = 
    
    #number for async queue at one time
+   
    NUMBER_OF_CONCURRENT_TASKS = 
 
 ![dsds](https://github.com/oreo-cloud/DAL-code-testing-system/assets/80167467/51c94826-eff9-424b-848e-149794955b8f)
