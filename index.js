@@ -1,17 +1,44 @@
 const express = require('express');
 const session = require('express-session');
+const bodyParser = require('body-parser');
+const chardet = require('chardet');
+const iconv = require('iconv-lite');
+require('dotenv').config();
 const app = express();
 const http = require('http');
 const WebSocket = require('ws');
 const pty = require('node-pty');
 const { exec } = require('child_process');
 const uuid = require('uuid');
+const multer = require('multer');
+
+const upload_tool = require('./upload');
+const AsyncQueue = require('./AsyncQueue');
 
 // find path
 const fs = require('fs');
 const path = require('path');
 
 const port = 3000;
+
+async function transcode(filename) {
+    const encoding = chardet.detectFileSync(filename); // 檢測編碼
+
+    if (encoding != 'utf-8') {
+        const data = await fs.promises.readFile(filename)
+        const convertedData = iconv.decode(data, encoding); // 藉由偵測到的編碼解碼
+        const newData = iconv.encode(convertedData, 'utf-8'); // 轉換成utf-8
+        await fs.promises.writeFile(filename, newData)
+    }
+}
+
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(session({
+    secret: process.env.secret, // 用來簽名會話ID的密鑰，可隨意填寫
+    resave: false,
+    saveUninitialized: true
+}));
 
 // 解析 JSON 請求體
 app.use(express.json());
@@ -23,6 +50,7 @@ app.set('views', path_to_views);
 
 // 設定靜態文件目錄
 app.use(express.static('public'));
+app.use(express.static('image'));
 
 app.get('/', async (req, res) => {
     const dirPath = path.join(__dirname, 'DS_exe');
@@ -87,7 +115,6 @@ app.get('/DS/:homework/:project', (req, res) => {
             let files = fs.readdirSync(directoryPath);
             let inputFiles = files.filter(file => file.startsWith('input') && path.extname(file) === '.txt');
             let inputNumbers = inputFiles.map(file => file.match(/\d+/)[0]);
-            console.log(inputNumbers);
             res.render('xterm', { homework: homework, project: project, id: id, inputNumbers: JSON.stringify(inputNumbers) });
         }
     });
@@ -116,9 +143,6 @@ app.post('/DS/get_file_content', (req, res) => {
     // 這裡要讀取檔案內容並傳給前端
     const id = req.body.id;
     const filename = req.body.filename;
-    console.log("id,filename");
-    console.log(id);
-    console.log(filename);
     const filePath = path.join(__dirname, 'exestation', id, filename);
 
     fs.access(filePath, fs.constants.F_OK, (err) => {
@@ -136,12 +160,89 @@ app.post('/DS/get_file_content', (req, res) => {
     });
 });
 
+const demo_code_storage = multer.diskStorage({
+    destination: async function (req, file, cb) {
+        await fs.promises.mkdir('DS_source/upload/', { recursive: true });
+        cb(null, 'DS_source/upload/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname)
+    }
+})
+
+var upload = multer({ storage: demo_code_storage }).any();
+
+app.post('/upload', upload, async (req, res) => {
+    const homeworkName = req.body.homeworkName;
+    const path_to_source_dir = path.join('DS_source', homeworkName);
+
+    for (const file of req.files) {
+        await transcode(file['path']);
+    }
+
+    try {
+        // 檢查老師上傳的檔案是否有符合規則
+        await upload_tool.check_file() ;
+    }
+
+    catch(error) {
+        await fs.promises.rm(path.join('DS_source', 'upload'), { recursive: true, force: true });
+        res.send(error.message);
+        return;
+    }
+
+    try {
+        // 確認有沒有重複的資料夾，有的話就刪掉(替代)
+        await fs.promises.readdir(path.join('DS_source', homeworkName));
+        await fs.promises.rm(path.join('DS_source', homeworkName), { recursive: true, force: true });
+    }
+
+    catch (err) { }
+
+    await fs.promises.mkdir(path_to_source_dir); // 建立資料夾
+
+    const files = await fs.promises.readdir('DS_source/upload'); // 讀出upload的檔案
+
+    for (const file of files) {
+        // 全部copy到新的資料夾
+        await fs.promises.copyFile(path.join('DS_source/upload', file), path.join(path_to_source_dir, file));
+    }
+
+    // 刪掉upload
+    await fs.promises.rm(path.join('DS_source', 'upload'), { recursive: true, force: true });
+
+    try {
+        await fs.promises.mkdir(path.join("DS_exe", homeworkName), { recursive: true });
+        const files = await fs.promises.readdir(path.join('DS_source', homeworkName));
+        const txt_files = files.filter(file => file.endsWith('.txt'));
+        for ( const txt_file of txt_files ) {
+            // 把txt全部搬去DS_exe
+            await fs.promises.copyFile(path.join('DS_source', homeworkName, txt_file), path.join('DS_exe', homeworkName, txt_file));
+        } // for()
+        const all_promise = await upload_tool.execute( "DS_source", homeworkName ); // 建立編譯promises
+        const asyncQueue = new AsyncQueue();
+        await asyncQueue.processQueue(all_promise); // 開始編譯
+        res.send('upload demo complete');
+    }
+    catch (err) {
+        res.send(err.message);
+    }
+});
+
+
+function checkAuthentication(req, res, next) {
+    if (req.session.isAuthenticated) {
+        next(); // 用戶已登入，繼續執行下一個路由處理函數
+    } else {
+        res.redirect('/login'); // 用戶未登入，重定向到登入頁面
+    }
+}
+
 // 實做一個staff only route 
 // 1. 只能用url進入
 // 2. 進入後會渲染staffonly.ejs
-app.get('/staffonly', (req, res) => {
-    console.log( );
-    res.render('staffonly');
+app.get('/login', (req, res) => {
+    res.render('login');
 });
 
 // 登入路由
@@ -149,33 +250,20 @@ app.get('/staffonly', (req, res) => {
 app.post('/DS/login', (req, res) => {
     const { username, password } = req.body;
 
-    // 讀取 shadow.txt
-    const shadowPath = path.join(__dirname, 'shadow.txt');
-    fs.readFile(shadowPath, 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ success: false, message: '無法讀取驗證資料' });
-        }
-        
-        // 分析檔案內容以獲取用戶名和密碼
-        const [validUsername, validPassword] = data.trim().split(':');
-
-        // 執行驗證過程
-        if (username === validUsername && password === validPassword) {
-            // 驗證成功
-            res.json({ success: true });
-        } else {
-            // 驗證失敗
-            res.json({ success: false, message: '用戶名或密碼錯誤' });
-        }
-    });
+    if (username === process.env.account && password === process.env.password) {
+        // 驗證成功
+        req.session.isAuthenticated = true; // 設置會話變量
+        res.json({ success: true });
+    } else {
+        // 驗證失敗
+        res.json({ success: false, message: '用戶名或密碼錯誤' });
+    }
 });
 
 // upload.ejs的路由
-app.get('/upload', (req, res) => {
-    res.render('upload'); // 假定您有一個upload.ejs檔案
+app.get('/staffonly', checkAuthentication, (req, res) => {
+    res.render('staffonly'); // 假定您有一個upload.ejs檔案
 });
-
 
 
 // 使用http模塊創建伺服器，並將Express應用作為請求處理器
@@ -251,8 +339,6 @@ wss.on('connection', (ws) => {
         }
     });
 });
-
-
 
 // 監聽與Express相同的端口
 server.listen(port, () => {

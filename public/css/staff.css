@@ -1,17 +1,112 @@
-/* staff.css */
-body {
-    background-color: #f8f9fa; /* 設置背景顏色 */
+#body {
+    /* background-color: rgb(28, 37, 66); */
+    background-image: url("/image/background.png");
 }
 
-.card {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加陰影效果 */
+.nav-bar {
+    width: auto;
+    height: 10vh;
+    background-color: rgba(42, 56, 117, 1);
+    color: rgb(236, 233, 233);
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
 }
 
-.card-header {
-    background-color: #007bff; /* 設置標題背景顏色 */
-    color: white; /* 設置標題文字顏色 */
+.dropzone {
+    position: absolute;
+    left: 8vw;
+    border-color: rgba(0, 0, 0, 0);
+    background-color: rgba(70, 70, 70, 0);
 }
 
-.btn-primary {
-    background-color: #0056b3; /* 設置按鈕顏色 */
+#upload-widget {
+    border: 2px dashed rgba(42, 56, 117, 1); /* 亮藍綠色虛線邊框 */
+    border-radius: 5px; /* 圓角邊框 */
+    background-color: rgba(0, 0, 0, 0); /* 輕微透明的白色背景 */
+    padding: 20px; /* 內邊距 */
+    width: 50vw; /* 寬度設為視窗寬度的50% */
+    height: 50vh; /* 高度設為視窗高度的50%，固定高度 */
+    color: #FFF; /* 白色文字，增加對比度 */
+    text-align: center; /* 文字置中 */
+    margin: 20px auto; /* 上下邊距20px，左右自動（使其居中） */
+    overflow-y: auto; /* 當內容超過高度時，垂直方向上顯示捲動條 */
+    cursor: pointer; /* 滑鼠懸停時顯示指針形狀 */
 }
+
+#upload-widget:hover {
+    background-color: rgba(0, 0, 0, 0.15); /* 滑鼠懸停時的背景顏色增加透明度 */
+}
+
+#send-btn {
+    position: relative;
+    top: 28vw;
+    left: 16vw;
+    opacity: 0; 
+    visibility: hidden; 
+    transition: visibility 0s, opacity 0.5s linear; /* 定義過渡效果 */
+}
+
+#remove-all-btn {
+    position: relative;
+    left: 7vw;
+    top: 0.7vw;
+    opacity: 0;
+    visibility: hidden;
+    transition: visibility 0s, opacity 0.5s linear; /* 定義過渡效果 */
+}
+
+#homework-name{
+    position: absolute;
+    height: 5vh;
+    left: 45vw;
+    top: 3vw;
+    border: rgba(0, 0, 0, 1);
+    border-radius: 2px;
+
+}
+
+.upload-icon{
+    position: absolute;
+    left: 30.7vw;
+    top: 20vw;
+    width: 5vw;
+    height: auto;
+    z-index: 20;
+    opacity: 1; 
+    visibility: visible; 
+    transition: visibility 0s, opacity 0.5s linear; /* 定義過渡效果 */
+}
+
+.rule{
+    position: absolute;
+    background-color: rgba(210, 210, 210, 0.5);
+    left: 70vw;
+    top: 8vw;
+    width: 25vw;
+    height: 65vh;
+    color: rgba(0, 0, 0, 1);
+    font-size: 20px;
+    padding: 25px;
+    border-radius: 8px;
+    border: 3px solid rgba(107, 126, 166, 1);
+
+}
+
+#notice{
+    font-size: 17px;
+    font-weight: bold;
+    color: rgba(255, 0, 0, 1);
+}
+
+#hint{
+    position: relative;
+    left: 30.9vw;
+    top: 0.95vw;
+    font-weight: bold;
+}
+

@@ -36,7 +36,7 @@ for (const item of data) {
     a_syntax = /a$/;
     b_syntax = /b$/;
     for ( const type of item.type ) {
-        console.log(type);
+
         if ( a_syntax.test( type ) ) {
             let button_a = document.createElement('button');
             button_a.className = 'button-54';

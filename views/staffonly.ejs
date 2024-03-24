@@ -3,41 +3,51 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>STAFF ONLY</title>
+    <title>Staff only</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- bootstrap排版套件 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
     <!-- 動畫 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <!-- dropzone套件 -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.css" /> -->
+    <link rel="stylesheet" href="/css/dropzone.css">
+    
     <link rel="stylesheet" href="/css/staff.css">
+
 </head>
 
-<body>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <div class="card">
-                    <div class="card-header">
-                        員工專用登入
-                    </div>
-                    <div class="card-body">
-                        <form>
-                            <div class="mb-3">
-                                <label for="username" class="form-label">用戶名</label>
-                                <input type="text" class="form-control" id="username" name="username">
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">密碼</label>
-                                <input type="password" class="form-control" id="password" name="password">
-                            </div>
-                            <button type="submit" class="btn btn-primary">登入</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+<body id="body">
+    <div class="nav-bar">管理者使用介面</div>
+    <div class="dropzone">
+        <button id="remove-all-btn" class="btn btn-danger mt-3">Delete All</button>
+        <img src="/image/upload.png" alt="upload" class="upload-icon" id="upload-img">
+        <span id="hint">上傳檔案：</span>
+        <input type="text" id="homework-name" placeholder=" 請輸入作業名稱" />
+        <div id="upload-widget" class="dropzone"></div>
+        
+        <button id="send-btn" class="btn btn-primary mt-3">上傳檔案</button>
     </div>
-    <!--bootstrap js套件-->
+
+    <div class="rule">
+        <span>檔案上傳規則：</span>
+        <ul></ul>
+        <li>DEMO：DEMO[a-z].cpp</li>
+
+        <li>QUIZ：QUIZ[a-z].cpp</li>
+
+        <li>input：input\d{3}\.txt</li>
+
+        <li>輸出檔案：output\d{3}\.txt</li>
+        <ul></ul>
+        <br><br>
+        
+        <li id="notice"><span>NOTICE：</span><span>如果該次作業只有一個 DEMO 或一個 QUIZ 系統為了要分甲乙班會自己拆成 DEMOa 與 DEMOb 或 QUIZa 與 QUIZb</span></li>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.js"></script>
     <script src="/js/staff.js"></script>
 </body>
 

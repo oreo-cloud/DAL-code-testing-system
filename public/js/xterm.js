@@ -8,7 +8,6 @@ var wsHost = window.location.host;
 var wsPath = "ws";
 var socketUrl = wsProtocol + '//' + wsHost + '/' + wsPath;
 
-console.log(socketUrl);
 var socket = new WebSocket(socketUrl);
 
 socket.onopen = function (event) {
@@ -32,6 +31,22 @@ window.addEventListener('resize', function () {
     // term.fit(); // 假設使用了fit插件
 });
 
+const parser = new DOMParser;
+const dom = parser.parseFromString('<!doctype html><body>' + encodedJson, 'text/html');
+const decodedJson = dom.body.textContent;
+const inputfile = JSON.parse(decodedJson);
+
+const input_file = document.getElementById('input');
+
+for ( const file of inputfile ) {
+    var file_span = document.createElement('span');
+    file_span.className = 'file';
+    file_span.innerText = file;
+    input_file.appendChild(file_span);
+}
+
+
+
 // 獲取按鈕元素
 let button19 = document.querySelector('.button-19');
 
@@ -42,21 +57,17 @@ button19.addEventListener('animationend', () => {
 });
 
 function test_click() {
-    console.log("click!");
+    
     fetch('/DS/get_output', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ "id": "e9e26000-deea-449e-9e7a-d86c4919c9201711101373526" })
+        body: JSON.stringify({ "id": id })
     })
     .then(response => response.json())
     .then(data => {
         const out = JSON.parse(data.filename);
-        console.log("id:");
-        console.log(id);
-        console.log("out:");
-        console.log(out);
     
         let buttonContainer = document.getElementById('buttonContainer');
         while (buttonContainer.firstChild) {
@@ -85,26 +96,32 @@ function test_click() {
 }
 
 function get_file_content(filename) {
-    console.log("preview!");
     fetch('/DS/get_file_content', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ "id": "e9e26000-deea-449e-9e7a-d86c4919c9201711101373526", "filename": filename })
+        body: JSON.stringify({ "id": id , "filename": filename })
     })
     .then(response => response.json())
     .then(data => {
         // 獲取卡片元素
-        
         let card = document.querySelector('#previewfile');
-        let cardTitle = card.querySelector('.card-title');
+        let cardHeader = card.querySelector('.card-header');
         let cardText = card.querySelector('.card-text');
 
+        // 移除原本的入場動畫類別
+        //card.classList.remove('animate__fadeOut');
+        card.style.display = 'none';
         // 設定卡片的標題和內容
-        cardTitle.textContent = filename;
-        cardText.textContent = data.content;
+        cardHeader.textContent = filename;
+        // 將換行符號替換為 <br> 標籤
+        cardText.innerHTML = data.content.replace(/\n/g, '<br>');
 
+        // 再次添加入場動畫類別
+        //card.classList.add('animate__fadeIn');
+        // 強制瀏覽器重新計算元素的樣式
+        void card.offsetWidth;
         // 顯示卡片
         card.style.display = 'block';
     })
@@ -112,3 +129,24 @@ function get_file_content(filename) {
         console.error('Error:', error);
     });
 }
+
+// 獲取按鈕元素
+let closeButton = document.querySelector('.btn-close');
+
+// 為按鈕添加點擊事件監聽器
+closeButton.addEventListener('click', function() {
+    // 獲取卡片元素
+    let card = document.querySelector('#previewfile');
+    card.style.display = 'none';
+    // 移除原本的入場動畫類別
+    //card.classList.remove('animate__fadeIn');
+    // 再次添加入場動畫類別
+    //card.classList.add('animate__fadeOut');
+    // 強制瀏覽器重新計算元素的樣式
+    //void card.offsetWidth;
+    // 當動畫結束時隱藏卡片
+    //card.addEventListener('animationend', function() {
+    //    card.style.display = 'none';
+    //});
+});
+

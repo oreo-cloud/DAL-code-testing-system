@@ -25,9 +25,9 @@ body {
 }
 
 .input_file {
-    position: fixed;
+    position: absolute;
     height: 75%;
-    width: 10%;
+    width: 13%;
     background-color: rgba(0, 0, 0, 0.6);
     text-align: center;
     display: flex;
@@ -217,4 +217,42 @@ body {
 .file_preview {
     width: 100px;
     height: 100px;
+}
+
+.card {
+    position: fixed;
+    top: 14%;
+    height: 80vh;
+    width: 60vw;
+    transition: background-color 0.3s, transform 0.3s, filter 0.3s;
+    z-index: 1000;
+}
+
+.card-body {
+    height: 94.5%;
+    width: 100%;
+    overflow-y: auto;
+}
+
+.btn-close {
+    position: absolute;
+    top: 1%;
+    right: 1%;
+}
+
+.file{
+    height: 10vh;
+    padding-top: 3vh;
+    transition: background-color 0.3s, transform 0.3s, filter 0.3s;
+    z-index: 10;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+#previewfile {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
