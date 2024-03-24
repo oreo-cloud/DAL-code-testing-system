@@ -2,7 +2,6 @@ FROM node:lts
 
 # 安裝OpenJDK來執行Java應用
 RUN apt-get update && \
-    apt-get install -y default-jre && \
     apt-get clean;
     
 # 創建應用目錄
