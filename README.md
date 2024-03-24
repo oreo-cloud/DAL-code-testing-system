@@ -10,7 +10,8 @@ Data Structure Display System (DSDS)
    secret = 
 
    #password
-   account = 
+   account =
+   
    password = 
    
    #number for async queue at one time
