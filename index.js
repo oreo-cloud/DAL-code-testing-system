@@ -50,7 +50,6 @@ app.set('views', path_to_views);
 
 // 設定靜態文件目錄
 app.use(express.static('public'));
-app.use(express.static('image'));
 
 app.get('/', async (req, res) => {
     const dirPath = path.join(__dirname, 'DS_exe');
@@ -229,6 +228,16 @@ app.post('/upload', upload, async (req, res) => {
     }
 });
 
+app.post('/delete', async (req, res) => {
+    const homeworkName = req.body.homeworkName;
+    try {
+        await fs.promises.rm(path.join('DS_exe', homeworkName), { recursive: true });
+        await fs.promises.rm(path.join('DS_source', homeworkName), { recursive: true });
+        res.send('delete complete');
+    } catch (err) {
+        res.send(err.message);
+    }
+});
 
 function checkAuthentication(req, res, next) {
     if (req.session.isAuthenticated) {
@@ -261,8 +270,10 @@ app.post('/DS/login', (req, res) => {
 });
 
 // upload.ejs的路由
-app.get('/staffonly', checkAuthentication, (req, res) => {
-    res.render('staffonly'); // 假定您有一個upload.ejs檔案
+app.get('/staffonly', checkAuthentication, async (req, res) => {
+    const homework = await fs.promises.readdir('DS_exe') ;
+
+    res.render('staffonly', {homeworklist: JSON.stringify(homework)});
 });
 
 

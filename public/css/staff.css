@@ -25,64 +25,80 @@
 }
 
 #upload-widget {
-    border: 2px dashed rgba(42, 56, 117, 1); /* 亮藍綠色虛線邊框 */
-    border-radius: 5px; /* 圓角邊框 */
-    background-color: rgba(0, 0, 0, 0); /* 輕微透明的白色背景 */
-    padding: 20px; /* 內邊距 */
-    width: 50vw; /* 寬度設為視窗寬度的50% */
-    height: 50vh; /* 高度設為視窗高度的50%，固定高度 */
-    color: #FFF; /* 白色文字，增加對比度 */
-    text-align: center; /* 文字置中 */
-    margin: 20px auto; /* 上下邊距20px，左右自動（使其居中） */
-    overflow-y: auto; /* 當內容超過高度時，垂直方向上顯示捲動條 */
-    cursor: pointer; /* 滑鼠懸停時顯示指針形狀 */
+    border: 2px dashed rgba(42, 56, 117, 1);
+    /* 亮藍綠色虛線邊框 */
+    border-radius: 5px;
+    /* 圓角邊框 */
+    background-color: rgba(0, 0, 0, 0);
+    /* 輕微透明的白色背景 */
+    padding: 20px;
+    /* 內邊距 */
+    width: 40vw;
+    /* 寬度設為視窗寬度的50% */
+    height: 50vh;
+    /* 高度設為視窗高度的50%，固定高度 */
+    color: #FFF;
+    /* 白色文字，增加對比度 */
+    text-align: center;
+    /* 文字置中 */
+    margin: 20px auto;
+    /* 上下邊距20px，左右自動（使其居中） */
+    overflow-y: auto;
+    /* 當內容超過高度時，垂直方向上顯示捲動條 */
+    cursor: pointer;
+    /* 滑鼠懸停時顯示指針形狀 */
+    left: 20vw;
 }
 
 #upload-widget:hover {
-    background-color: rgba(0, 0, 0, 0.15); /* 滑鼠懸停時的背景顏色增加透明度 */
+    background-color: rgba(0, 0, 0, 0.15);
+    /* 滑鼠懸停時的背景顏色增加透明度 */
 }
 
 #send-btn {
     position: relative;
     top: 28vw;
-    left: 16vw;
-    opacity: 0; 
-    visibility: hidden; 
-    transition: visibility 0s, opacity 0.5s linear; /* 定義過渡效果 */
+    left: 23vw;
+    opacity: 0;
+    visibility: hidden;
+    transition: visibility 0s, opacity 0.5s linear;
+    /* 定義過渡效果 */
 }
 
 #remove-all-btn {
     position: relative;
-    left: 7vw;
+    left: 18.5vw;
     top: 0.7vw;
     opacity: 0;
     visibility: hidden;
-    transition: visibility 0s, opacity 0.5s linear; /* 定義過渡效果 */
+    transition: visibility 0s, opacity 0.5s linear;
+    /* 定義過渡效果 */
 }
 
-#homework-name{
+#homework-name {
     position: absolute;
     height: 5vh;
-    left: 45vw;
+    left: 47vw;
     top: 3vw;
     border: rgba(0, 0, 0, 1);
     border-radius: 2px;
 
 }
 
-.upload-icon{
+.upload-icon {
     position: absolute;
-    left: 30.7vw;
+    left: 38vw;
     top: 20vw;
     width: 5vw;
     height: auto;
     z-index: 20;
-    opacity: 1; 
-    visibility: visible; 
-    transition: visibility 0s, opacity 0.5s linear; /* 定義過渡效果 */
+    opacity: 1;
+    visibility: visible;
+    transition: visibility 0s, opacity 0.5s linear;
+    /* 定義過渡效果 */
 }
 
-.rule{
+.rule {
     position: absolute;
     background-color: rgba(210, 210, 210, 0.5);
     left: 70vw;
@@ -97,16 +113,82 @@
 
 }
 
-#notice{
+#notice {
     font-size: 17px;
     font-weight: bold;
     color: rgba(255, 0, 0, 1);
 }
 
-#hint{
+#hint {
     position: relative;
-    left: 30.9vw;
+    left: 32.9vw;
     top: 0.95vw;
     font-weight: bold;
 }
 
+.uploded-homework {
+    position: absolute;
+    left: 1.5vw;
+    top: 8vw;
+    width: 25vw;
+    height: 65vh;
+    background-color: rgba(210, 210, 210, 0.5);
+    border: 3px solid rgba(107, 126, 166, 1);
+    border-radius: 8px;
+    overflow-x: hidden;
+}
+
+#delete-text {
+    position: absolute;
+    left: 1.5vw;
+    top: 1vw;
+    font-size: 20px;
+    padding: 5px;
+    font-weight: bold;
+}
+
+.homework-container {
+    position: relative;
+    width: 20vw;
+    height: 8vh;
+    left: 0vh;
+    top: 5vh;
+    background-color: rgba(210, 210, 210, 0.5);
+    border: 1.5px solid rgba(107, 126, 166, 1);
+    border-radius: 8px;
+    margin: 2vw;
+    padding-left: 2vh;
+
+    /* 修改以下三行來實現文字置左，按鈕置右，並且兩者上下置中 */
+    display: flex;
+    justify-content: space-between; 
+    align-items: center; /* 新增這行來實現兩者上下置中 */
+
+}
+
+.delete-btn-mine {
+    width: 30px;
+    height: 30px;
+    margin-right: 2vh;
+    background-color: rgba(255, 0, 0, 1);
+    /* 滑鼠懸停時的背景顏色增加透明度 */
+
+    display: flex;
+    justify-content: center;
+    /* 圖案水平置中 */
+    align-items: center;
+    /* 圖案垂直置中 */
+
+    cursor: pointer;
+    z-index: 5;
+}
+
+.delete-btn-mine:hover {
+    background-color: rgba(255, 0, 0, 0.7);
+    /* 滑鼠懸停時的背景顏色增加透明度 */
+}
+
+.delete-icon {
+    width: 30px;
+    height: auto;
+}

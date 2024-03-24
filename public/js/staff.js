@@ -84,14 +84,7 @@ var myDropzone = new Dropzone("#upload-widget", {
                 alert('檔案上傳成功！');
             }
 
-            // 在這裡處理成功的回應
-            if (myDropzone.files.length > 0) {
-                // 移除所有檔案
-                myDropzone.removeAllFiles(true);
-            }
-
-            document.getElementById('homework-name').value = ''; // 清空備註欄位
-            hideButton(); // 按鈕隱藏
+            location.reload();
         });
     }
 });
@@ -107,3 +100,52 @@ document.getElementById('send-btn').addEventListener('click', function (event) {
     }
 });
 
+const parser = new DOMParser;
+const dom = parser.parseFromString('<!doctype html><body>' + encodedJson, 'text/html');
+const decodedJson = dom.body.textContent;
+const homework_list = JSON.parse(decodedJson);
+
+const delete_zone = document.getElementById('delete-zone');
+
+for ( const homework of homework_list ) {
+    // 最外面一層，負責包住沒個作業跟刪除按鈕
+    const container = document.createElement('div');
+    container.className = 'homework-container';
+
+    // 作業名稱
+    const homework_div = document.createElement('div');
+    homework_div.className = 'homework-item';
+    homework_div.innerText = homework;
+    
+    // 垃圾桶圖示
+    const trashcan = document.createElement('img');
+    trashcan.src = '/image/delete.png';
+    trashcan.className = 'delete-icon';
+
+    // 刪除按鈕
+    const delete_btn = document.createElement('button');
+    delete_btn.className = 'btn btn-danger btn-sm delete-btn delete-btn-mine';
+    delete_btn.onclick = function() {
+        fetch('/delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ homeworkName: homework }),
+        }).then(response => {
+            if (response.ok) {
+                alert(`作業${homework}，已刪除`);
+                location.reload();
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+
+    };
+    delete_btn.appendChild(trashcan);
+
+    container.appendChild(homework_div);
+    container.appendChild(delete_btn);
+
+    delete_zone.appendChild(container);
+}

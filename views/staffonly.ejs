@@ -20,6 +20,11 @@
 
 <body id="body">
     <div class="nav-bar">管理者使用介面</div>
+
+    <div class="uploded-homework" id="delete-zone">
+        <span id="delete-text">刪除作業：</span>
+    </div>
+
     <div class="dropzone">
         <button id="remove-all-btn" class="btn btn-danger mt-3">Delete All</button>
         <img src="/image/upload.png" alt="upload" class="upload-icon" id="upload-img">
@@ -46,6 +51,9 @@
         <li id="notice"><span>NOTICE：</span><span>如果該次作業只有一個 DEMO 或一個 QUIZ 系統為了要分甲乙班會自己拆成 DEMOa 與 DEMOb 或 QUIZa 與 QUIZb</span></li>
     </div>
 
+    <script>
+        const encodedJson = '<%= homeworklist %>';
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.js"></script>
     <script src="/js/staff.js"></script>
