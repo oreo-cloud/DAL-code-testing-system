@@ -78,24 +78,6 @@ app.get('/', async (req, res) => {
         console.log(error);
     }
 
-
-    // fs.readdir(dirPath, (err, homeworks) => {
-    //     if (err) {
-    //         console.error(err);
-    //         res.status(500).send('Server error');
-    //         return;
-    //     }
-
-    //     const data = homeworks.map(homework => {
-    //         const homeworkPath = path.join(dirPath, homework);
-    //         let types = fs.readdirSync(homeworkPath);
-    //         types = types.filter(type => type.endsWith('.cpp')); // 過濾出所有 .cpp 結尾的文件
-    //         types = types.map(type => type.replace('.cpp', '')); // 刪除 .cpp 後綴
-    //         return { homework, type: types };
-    //     });
-
-    //     res.render('index', { data: JSON.stringify(data) });
-    // });
 });
 
 // project 有沒有出現在 ./DS_exe 資料夾中
@@ -119,21 +101,30 @@ app.get('/DS/:homework/:project', (req, res) => {
     });
 });
 
-app.post('/DS/get_output', (req, res) => {
+app.post('/DS/get_output', async (req, res) => {
     // { "id": "132138434613" }
     // 輸出檔格式(JSON): output_*.txt
     const id = req.body.id;
     const directoryPath = path.join(__dirname, 'exestation', id);
+    let outputFiles = [];
 
-    fs.access(directoryPath, fs.constants.F_OK, (err) => {
-        if (err) {
-            res.send('Invalid id in get_output');
-        } else {
-            let files = fs.readdirSync(directoryPath);
-            let outputFiles = files.filter(file => file.includes('output') && path.extname(file) === '.txt');
-            res.send({ filename: JSON.stringify(outputFiles) });
-        }
-    });
+    try {
+        const files = await fs.promises.readdir(directoryPath);
+        const inputfile_syntax = /^input\d{3}\.txt$/;
+        const exe_syntax = /^DEMO|^QUIZ/;
+        for ( const file of files ) {
+            if ( !inputfile_syntax.test(file) && !exe_syntax.test(file) ) {
+                // not a input file
+                outputFiles.push(file);
+            }
+        } // for()
+
+        res.send({ filename: JSON.stringify(outputFiles) });
+    }
+
+    catch {
+        res.send('Invalid id in get_output');
+    }
 
 });
 
