@@ -119,6 +119,8 @@ app.post('/DS/get_output', async (req, res) => {
             }
         } // for()
 
+        outputFiles.sort();
+
         res.send({ filename: JSON.stringify(outputFiles) });
     }
 
@@ -267,6 +269,18 @@ app.get('/staffonly', checkAuthentication, async (req, res) => {
     res.render('staffonly', {homeworklist: JSON.stringify(homework)});
 });
 
+app.post('/get_files' , async (req, res) => {
+    const id = req.body.id;
+    try {
+        const files = await fs.promises.readdir(`./exestation/${id}`);
+        res.send({files: JSON.stringify(files)});
+    }
+
+    catch {
+        res.send('Invalid id in get_files');
+    }
+
+});
 
 // 使用http模塊創建伺服器，並將Express應用作為請求處理器
 const server = http.createServer(app);

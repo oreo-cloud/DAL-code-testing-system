@@ -99,7 +99,7 @@ body {
     padding-left: 20px;
     padding-right: 20px;
     padding-bottom: 20px;
-    /*overflow-y: auto;*/
+    overflow-y: auto;
     /* 新增此行來添加滾輪 */
     border-radius: 10px;
 }
@@ -113,7 +113,7 @@ body {
 
 .testing {
     width: auto;
-    position: absolute;
+    position: fixed;
     bottom: 5%;
     cursor: pointer;
 }
@@ -155,49 +155,16 @@ body {
   white-space: nowrap; /* 確保文字在一行內顯示，而不會換行 */
 }
 
-.button-55:hover {
-  box-shadow: rgba(0, 0, 0, .3) 2px 8px 8px -5px;
-  transform: translate3d(0, 2px, 0);
-}
 
 .button-55:focus {
   box-shadow: rgba(0, 0, 0, .3) 2px 8px 4px -6px;
 }
 
 .button-19 {
-    appearance: button;
-    background-color: #1899D6;
-    border: solid transparent;
-    border-radius: 16px;
-    border-width: 0 0 4px;
-    box-sizing: border-box;
-    color: #FFFFFF;
-    cursor: pointer;
-    display: inline-block;
-    font-family: din-round, sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: .8px;
-    line-height: 20px;
-    margin: 10px;
-    outline: none;
-    overflow: visible;
-    padding: 13px 16px;
-    text-align: center;
-    text-transform: uppercase;
-    touch-action: manipulation;
-    transform: translateZ(0);
-    transition: filter .2s;
-    user-select: none;
-    -webkit-user-select: none;
-    vertical-align: middle;
-    white-space: nowrap;
-    width: 122px;
-    height: 96px;
-    clip-path: polygon(82% 70%, 62% 70%, 62% 100%, 42% 100%, 42% 70%, 22% 70%, 52% 24%);
+    display: none;
 }
 
-.button-19:after {
+/* .button-19:after {
     background-clip: padding-box;
     background-color: #1CB0F6;
     border: solid transparent;
@@ -232,7 +199,7 @@ body {
 .button-19:active {
     border-width: 4px 0 0;
     background: none;
-}
+} */
 
 .file_preview {
     width: 100px;
@@ -246,13 +213,17 @@ body {
     width: 60vw;
     transition: background-color 0.3s, transform 0.3s, filter 0.3s;
     z-index: 1000;
+    overflow-y: hidden;
 }
 
 .card-body {
     height: 94.5%;
     width: 100%;
+    overflow-x: auto;
     overflow-y: auto;
+    white-space: nowrap;
 }
+
 
 .btn-close {
     position: absolute;

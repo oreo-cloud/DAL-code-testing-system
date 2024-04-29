@@ -2,8 +2,9 @@
 <html>
 
 <head>
-    <title>Data Structure</title>
+    <title><%= homework %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/public/image/dsds.png?v=2" type="image/x-icon">
     <link rel="stylesheet" href="https://unpkg.com/xterm/css/xterm.css" />
     <script src="https://unpkg.com/xterm/lib/xterm.js"></script>
     <script src="https://unpkg.com/xterm-addon-attach/lib/xterm-addon-attach.js"></script>
@@ -16,7 +17,7 @@
         integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
         crossorigin="anonymous"></script>
     <!--動畫-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 </head>
 
 <body>
@@ -37,13 +38,15 @@
                 <span>output file</span>
                 <div id="buttonContainer"></div>
 
-                <button class="button-19 testing animate__animated animate__flip" onclick="test_click()" title="click to show the output file"></button>
-                <span style="position: absolute; bottom: 1%; color: #1899D6;">show the output file</span>
+                <!--only for close button usability-->
+                <button id="secret-btn" class="button-19"></button>
+                <!--only for close button usability-->
             </div>
         </div>
     </div>
 
-    <div class="card file_preview text-dark bg-light mb-3 animate__animated animate__fadeIn" id="previewfile" style="display: none;">
+    <div class="card file_preview text-dark bg-light mb-3 animate__animated animate__fadeIn" id="previewfile"
+        style="display: none;">
         <div class="card-header"></div>
         <button type="button" class="btn-close" aria-label="Close"></button>
         <div class="card-body">
