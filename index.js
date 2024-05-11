@@ -94,7 +94,7 @@ app.get('/DS/:homework/:project', (req, res) => {
             res.send('Invalid project');
         } else {
             let files = fs.readdirSync(directoryPath);
-            let inputFiles = files.filter(file => file.startsWith('input') && path.extname(file) === '.txt');
+            let inputFiles = files.filter(file => (file.startsWith('input') || file.startsWith('pairs') ) && ( path.extname(file) === '.txt' || path.extname(file) === '.bin' ));
             let inputNumbers = inputFiles.map(file => file.match(/\d+/)[0]);
             res.render('xterm', { homework: homework, project: project, id: id, inputNumbers: JSON.stringify(inputNumbers) });
         }
@@ -110,7 +110,7 @@ app.post('/DS/get_output', async (req, res) => {
 
     try {
         const files = await fs.promises.readdir(directoryPath);
-        const inputfile_syntax = /^input\d{3}\.txt$/;
+        const inputfile_syntax = /^(input|pairs)\d{3}\.txt$/;
         const exe_syntax = /^DEMO|^QUIZ/;
         for ( const file of files ) {
             if ( !inputfile_syntax.test(file) && !exe_syntax.test(file) ) {
@@ -206,11 +206,13 @@ app.post('/upload', upload, async (req, res) => {
     try {
         await fs.promises.mkdir(path.join("DS_exe", homeworkName), { recursive: true });
         const files = await fs.promises.readdir(path.join('DS_source', homeworkName));
-        const txt_files = files.filter(file => file.endsWith('.txt'));
-        for ( const txt_file of txt_files ) {
+        const relation_files = files.filter(file => file.endsWith('.txt') || file.endsWith('.bin'));
+
+        for ( const relation_file of relation_files ) {
             // 把txt全部搬去DS_exe
-            await fs.promises.copyFile(path.join('DS_source', homeworkName, txt_file), path.join('DS_exe', homeworkName, txt_file));
+            await fs.promises.copyFile(path.join('DS_source', homeworkName, relation_file), path.join('DS_exe', homeworkName, relation_file));
         } // for()
+
         const all_promise = await upload_tool.execute( "DS_source", homeworkName ); // 建立編譯promises
         const asyncQueue = new AsyncQueue();
         await asyncQueue.processQueue(all_promise); // 開始編譯
@@ -306,7 +308,7 @@ wss.on('connection', (ws) => {
             id = data.id;
             const cwd = `./exestation/${id}`;
             try {
-                const regex = /^input\d{3}\.txt$/;
+                const regex = /^(input|pairs)\d{3}\.(txt|bin)$/;
                 await fs.promises.mkdir(cwd);
                 const files = await fs.promises.readdir(`./DS_exe/${homework}`);
                 for (const file of files) {

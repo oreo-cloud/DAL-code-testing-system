@@ -37,7 +37,7 @@ var myDropzone = new Dropzone("#upload-widget", {
     url: "/upload",
     paramName: "files",
     uploadMultiple: true,
-    acceptedFiles: ".cpp, .txt",
+    acceptedFiles: ".cpp, .txt, .bin",
     parallelUploads: 20,
     autoProcessQueue: false,
     timeout: 100000, // 設置 timeout 為 30 秒

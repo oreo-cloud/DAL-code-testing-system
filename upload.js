@@ -47,10 +47,8 @@ async function execute(input_dir, homework_name) {
 async function check_file_existence() {
 
     const all_files = await fs.promises.readdir(path.join('DS_source', 'upload'));
-    regex_input = /^input\d{3}\.txt$/;
-    regex_cpp_soft = /(DEMO[a-z]*|QUIZ[a-z]*).cpp$/;
-    regex_cpp_DEMO = /DEMO.cpp/;
-    regex_cpp_QUIZ = /QUIZ.cpp/;
+    regex_input = /^(input|pairs)\d{3}\.(txt|bin)$/;
+    regex_cpp_soft = /(DEMO[a-z]{1}|QUIZ[a-z]{1}).cpp$/;
 
     // 分類檔案
     for (const file of all_files) {
@@ -60,20 +58,7 @@ async function check_file_existence() {
         }
 
         else if (regex_cpp_soft.test(file)) {
-            // 檢查cpp file是否存在
-            if ( regex_cpp_DEMO.test(file) ) {
-                //複製出兩份，一份是DEMOa.cpp，一份是DEMOb.cpp
-                fs.promises.copyFile(path.join('DS_source', 'upload', file), path.join('DS_source', 'upload', 'DEMOa.cpp'));
-                fs.promises.copyFile(path.join('DS_source', 'upload', file), path.join('DS_source', 'upload', 'DEMOb.cpp'));
-                fs.promises.rm(path.join('DS_source', 'upload', file));
-            }
-
-            else if ( regex_cpp_QUIZ.test(file) ) {
-                //複製出兩份，一份是QUIZa.cpp，一份是QUIZb.cpp
-                fs.promises.copyFile(path.join('DS_source', 'upload', file), path.join('DS_source', 'upload', 'QUIZa.cpp'));
-                fs.promises.copyFile(path.join('DS_source', 'upload', file), path.join('DS_source', 'upload', 'QUIZb.cpp'));
-                fs.promises.rm(path.join('DS_source', 'upload', file));
-            } // else if()
+            
         }
 
         else {
