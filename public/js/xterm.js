@@ -7,8 +7,10 @@ var wsPath = "ws";
 var socketUrl = wsProtocol + '//' + wsHost + '/' + wsPath;
 
 var socket = new WebSocket(socketUrl);
+const download_zone = document.querySelector('#download_zone');
 
 var file_list = [] ;
+var original_file = 0;
 
 function arraysEqual(a, b) {
     if (a.length !== b.length) return false;
@@ -34,6 +36,7 @@ socket.onopen = function (event) {
             for ( const file of files ) {
                 file_list.push(file);
             }
+            original_file = files.length;
     
         })
         .catch((error) => {
@@ -45,7 +48,9 @@ socket.onopen = function (event) {
 };
 
 socket.onclose = function (event) {
-    window.location.href = "/";
+    setTimeout(() => {
+        window.location.href = "/";
+    }, 5000);
 };
 
 term.attachCustomKeyEventHandler(function (event) {
@@ -61,6 +66,7 @@ term.attachCustomKeyEventHandler(function (event) {
             .then(response => response.json())
             .then(data => {
                 const files = JSON.parse(data.files);
+
                 
                 if ( arraysEqual(files, file_list) ) {
                     ;
@@ -69,6 +75,16 @@ term.attachCustomKeyEventHandler(function (event) {
                 else {
                     test_click();
                     file_list = files;
+                }
+
+                if ( files.length > original_file ) {
+                    download_zone.classList.add('show');
+                    download_zone.classList.remove('hide');
+                }
+
+                else {
+                    download_zone.classList.add('hide');
+                    download_zone.classList.remove('show');
                 }
         
             })
@@ -108,8 +124,6 @@ for ( const file of inputfile ) {
     file_span.innerText = file;
     input_file.appendChild(file_span);
 }
-
-
 
 // 獲取按鈕元素
 let button19 = document.querySelector('.button-19');
@@ -210,3 +224,33 @@ closeButton.addEventListener('click', function() {
     let card = document.querySelector('#previewfile');
     card.style.display = 'none';
 });
+
+function download_file() {
+    fetch('/DS/download_output', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: id })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok.');
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'output.zip';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+    
+}

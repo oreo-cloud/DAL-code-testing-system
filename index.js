@@ -1,4 +1,5 @@
 const express = require('express');
+const archiver = require('archiver');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const chardet = require('chardet');
@@ -23,8 +24,9 @@ const port = 3000;
 
 async function transcode(filename) {
     const encoding = chardet.detectFileSync(filename); // 檢測編碼
+    const regex = /\.bin$/;
 
-    if (encoding != 'utf-8') {
+    if (encoding != 'utf-8' && !regex.test(filename)) {
         const data = await fs.promises.readFile(filename)
         const convertedData = iconv.decode(data, encoding); // 藉由偵測到的編碼解碼
         const newData = iconv.encode(convertedData, 'utf-8'); // 轉換成utf-8
@@ -53,7 +55,7 @@ app.use(express.static('public'));
 
 app.get('/', async (req, res) => {
     const dirPath = path.join(__dirname, 'DS_exe');
-    const regex = /^DEMO|^QUIZ/;
+    const regex = /^DEMO|^QUIZ|^BEST|^SLOW/;
     const datas = [];
 
     try {
@@ -101,6 +103,67 @@ app.get('/DS/:homework/:project', (req, res) => {
     });
 });
 
+
+// 這邊要做一個api for download  all output file
+// 前端傳送 { "id": "132138434613" }
+// 這裡要把所有output file打包成zip檔案並傳給前端
+// 先設定相關路徑
+// 設定壓縮檔的動作
+// 壓縮完成後下載檔案
+// 定義輸出的檔案格式
+app.post('/DS/download_output', async (req, res) => {
+    try {
+        // 學生的id
+        const id = req.body.id;
+        // 要壓縮的資料夾路徑
+        const directoryPath = path.join(__dirname, 'exestation', id);
+        // 壓縮檔案的路徑
+        const zipPath = path.join(__dirname, 'exestation', id + '.zip');
+        // 讀取資料夾內的檔案
+        const files = await fs.promises.readdir(directoryPath);
+        const outputSyntax = /^(output|pairs)\d{3}\.(txt|adj|cnt)$/;
+        // 過濾出output file
+        const outputFiles = files.filter(file => outputSyntax.test(file));
+        // 輸出檔案的路徑
+        const outputPaths = outputFiles.map(file => path.join(directoryPath, file));
+
+        // 壓縮檔案
+        const output = fs.createWriteStream(zipPath);
+        // 使用archiver套件壓縮檔案
+        
+        const archive = archiver('zip', {
+            zlib: { level: 9 } // Sets the compression level.
+        });
+
+        // 壓縮完成後下載檔案
+        output.on('close', () => {
+            res.download(zipPath, 'output.zip', (err) => {
+                if (err) {
+                    console.error(err);
+                } else {
+                    fs.promises.rm(zipPath);
+                }
+            });
+        });
+
+        archive.on('error', (err) => {
+            throw err;
+        });
+
+        // 將壓縮檔案寫入output
+        archive.pipe(output);
+        // 將output file加入壓縮檔案
+        outputPaths.forEach(file => {
+            archive.file(file, { name: path.basename(file) });
+        });
+        // 完成壓縮
+        archive.finalize();
+    }
+    catch (err) {
+        res.send(err.message);
+    }
+});
+
 app.post('/DS/get_output', async (req, res) => {
     // { "id": "132138434613" }
     // 輸出檔格式(JSON): output_*.txt
@@ -110,8 +173,8 @@ app.post('/DS/get_output', async (req, res) => {
 
     try {
         const files = await fs.promises.readdir(directoryPath);
-        const inputfile_syntax = /^(input|pairs)\d{3}\.txt$/;
-        const exe_syntax = /^DEMO|^QUIZ/;
+        const inputfile_syntax = /^(input|pairs)\d{3}\.(txt|bin)$/;
+        const exe_syntax = /^DEMO|^QUIZ|^SLOW|^BEST/;
         for ( const file of files ) {
             if ( !inputfile_syntax.test(file) && !exe_syntax.test(file) ) {
                 // not a input file

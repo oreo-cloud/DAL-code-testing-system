@@ -49,16 +49,21 @@ async function check_file_existence() {
     const all_files = await fs.promises.readdir(path.join('DS_source', 'upload'));
     regex_input = /^(input|pairs)\d{3}\.(txt|bin)$/;
     regex_cpp_soft = /(DEMO[a-z]{1}|QUIZ[a-z]{1}).cpp$/;
+    regex_cpp_speed = /(SLOW|BEST)[a-z]{1}.cpp/;
 
     // 分類檔案
     for (const file of all_files) {
         if (regex_input.test(file)) {
             // 檢查relation file是否存在
-
+            ;
         }
 
         else if (regex_cpp_soft.test(file)) {
-            
+            ;
+        }
+
+        else if (regex_cpp_speed.test(file)) {
+            ;
         }
 
         else {

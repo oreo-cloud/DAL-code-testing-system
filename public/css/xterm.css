@@ -164,43 +164,6 @@ body {
     display: none;
 }
 
-/* .button-19:after {
-    background-clip: padding-box;
-    background-color: #1CB0F6;
-    border: solid transparent;
-    border-radius: 16px;
-    border-width: 0 0 4px;
-    bottom: -4px;
-    content: "";
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: -1;
-}
-
-.button-19:main,
-.button-19:focus {
-    user-select: auto;
-}
-
-.button-19:hover:not(:disabled) {
-    filter: brightness(1.1);
-    -webkit-filter: brightness(1.1);
-    animation: heartBeat;
-    animation-duration: 1s;
-    animation-fill-mode: both;
-}
-
-.button-19:disabled {
-    cursor: auto;
-}
-
-.button-19:active {
-    border-width: 4px 0 0;
-    background: none;
-} */
-
 .file_preview {
     width: 100px;
     height: 100px;
@@ -250,4 +213,43 @@ body {
 #discription{
     font-size: 20px;
     font-weight: bold;
+}
+
+.download {
+    position: fixed;
+    scale: 20%;
+    top: 30vh;
+    cursor: pointer;
+    opacity: 0; 
+
+    transition: opacity 0.5s ease-in-out;
+}
+
+.download.show {
+    display: block; /* 顯示元素 */
+    opacity: 1; /* 元素完全可見 */
+}
+
+.download.hide {
+    opacity: 0; /* 元素不可見 */
+    transition: opacity 0.5s ease-in-out, display 0.5s ease-in-out 0.5s; /* 使用 display 屬性延遲隱藏 */
+}
+
+.download.hide {
+    display: none; /* 完全隱藏元素 */
+}
+
+
+#download_word{
+    font-size: 10vh;
+    cursor: pointer;
+}
+
+.download:hover {
+    scale: 0.205;
+}
+
+#buttonContainer{
+    height: 68%;
+    overflow-y: auto;
 }
