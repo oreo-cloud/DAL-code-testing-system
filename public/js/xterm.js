@@ -10,7 +10,7 @@ var socket = new WebSocket(socketUrl);
 const download_zone = document.querySelector('#download_zone');
 
 var file_list = [] ;
-var original_file = 0;
+var original_file = [];
 
 function arraysEqual(a, b) {
     if (a.length !== b.length) return false;
@@ -76,16 +76,6 @@ term.attachCustomKeyEventHandler(function (event) {
                     test_click();
                     file_list = files;
                 }
-
-                if ( files.length > original_file ) {
-                    download_zone.classList.add('show');
-                    download_zone.classList.remove('hide');
-                }
-
-                else {
-                    download_zone.classList.add('hide');
-                    download_zone.classList.remove('show');
-                }
         
             })
             .catch((error) => {
@@ -97,6 +87,8 @@ term.attachCustomKeyEventHandler(function (event) {
 
     
 });
+
+
 
 var attachAddon = new AttachAddon.AttachAddon(socket);
 term.loadAddon(attachAddon);
@@ -168,6 +160,17 @@ function test_click() {
                 buttonContainer.appendChild(newButton);
             }, 0);  // 每個按鈕的創建被延遲了 index * 300 毫秒, index=1,2,3,...
         });
+
+        if ( out.length != 0 ) {
+            download_zone.classList.add('show');
+            download_zone.classList.remove('hide');
+        }
+
+        else {
+            download_zone.classList.add('hide');
+            download_zone.classList.remove('show');
+        }
+        
     })
     .catch((error) => {
         console.error('Error:', error);

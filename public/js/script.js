@@ -3,6 +3,8 @@ const dom = parser.parseFromString('<!doctype html><body>' + encodedJson, 'text/
 const decodedJson = dom.body.textContent;
 const data = JSON.parse(decodedJson);
 
+console.log(data);
+
 let buttonsDiv = document.getElementById('buttons');
 let body_part = document.getElementById('body');
 buttonsDiv.innerHTML = '';

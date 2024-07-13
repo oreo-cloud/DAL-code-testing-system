@@ -24,7 +24,7 @@ const port = 3000;
 
 async function transcode(filename) {
     const encoding = chardet.detectFileSync(filename); // 檢測編碼
-    const regex = /\.bin$/;
+    const regex = /\.bin$/; // bin檔不轉換
 
     if (encoding != 'utf-8' && !regex.test(filename)) {
         const data = await fs.promises.readFile(filename)
@@ -54,16 +54,21 @@ app.set('views', path_to_views);
 app.use(express.static('public'));
 
 app.get('/', async (req, res) => {
+    // 控制主頁面要輸出的資料
     const dirPath = path.join(__dirname, 'DS_exe');
+
+    // 控制執行檔的檔名 (要改在這裡改)
     const regex = /^DEMO|^QUIZ|^BEST|^SLOW/;
     const datas = [];
 
     try {
         const exe_file = await fs.promises.readdir(dirPath);
         for ( const homeworks of exe_file ) {
+            // 所有資料夾(作業名稱)
             const homework_files = await fs.promises.readdir( path.join( dirPath, homeworks ) );
             var types = [];
             for ( const type of homework_files ) {
+                // 一個資料夾裡的所有檔案，只取出.exe檔
                 if ( regex.test(type) ) {
                     types.push(type);
                 }
@@ -91,11 +96,13 @@ app.get('/DS/:homework/:project', (req, res) => {
     const filePath = path.join(__dirname, 'DS_exe', homework, project);
     const directoryPath = path.join(__dirname, 'DS_exe', homework);
     const id = uuid.v4() + Date.now();
+    
     fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
             res.send('Invalid project');
         } else {
             let files = fs.readdirSync(directoryPath);
+            // 選擇要展示的input檔案
             let inputFiles = files.filter(file => (file.startsWith('input') || file.startsWith('pairs') ) && ( path.extname(file) === '.txt' || path.extname(file) === '.bin' ));
             let inputNumbers = inputFiles.map(file => file.match(/\d+/)[0]);
             res.render('xterm', { homework: homework, project: project, id: id, inputNumbers: JSON.stringify(inputNumbers) });
@@ -113,23 +120,16 @@ app.get('/DS/:homework/:project', (req, res) => {
 // 定義輸出的檔案格式
 app.post('/DS/download_output', async (req, res) => {
     try {
-        // 學生的id
         const id = req.body.id;
-        // 要壓縮的資料夾路徑
         const directoryPath = path.join(__dirname, 'exestation', id);
-        // 壓縮檔案的路徑
         const zipPath = path.join(__dirname, 'exestation', id + '.zip');
-        // 讀取資料夾內的檔案
         const files = await fs.promises.readdir(directoryPath);
-        const outputSyntax = /^(output|pairs)\d{3}\.(txt|adj|cnt)$/;
-        // 過濾出output file
+        // 找到要給同學下載的檔案 ( 要更改在這裡改 )
+        const outputSyntax = /^(output|pairs|order|select|bubble|merge|quick|radix)\d{3}\.(txt|adj|cnt|inf)$/;
         const outputFiles = files.filter(file => outputSyntax.test(file));
-        // 輸出檔案的路徑
         const outputPaths = outputFiles.map(file => path.join(directoryPath, file));
 
-        // 壓縮檔案
         const output = fs.createWriteStream(zipPath);
-        // 使用archiver套件壓縮檔案
         
         const archive = archiver('zip', {
             zlib: { level: 9 } // Sets the compression level.
@@ -173,11 +173,13 @@ app.post('/DS/get_output', async (req, res) => {
 
     try {
         const files = await fs.promises.readdir(directoryPath);
+        // 排除掉input檔、bin檔、exe檔 (如果有要更改可以在這裡修改)
         const inputfile_syntax = /^(input|pairs)\d{3}\.(txt|bin)$/;
+        const bin_file = /.bin$/
         const exe_syntax = /^DEMO|^QUIZ|^SLOW|^BEST/;
         for ( const file of files ) {
-            if ( !inputfile_syntax.test(file) && !exe_syntax.test(file) ) {
-                // not a input file
+            if ( !inputfile_syntax.test(file) && !exe_syntax.test(file) && !bin_file.test(file) ) {
+                // not a input file and bin file, we let bin file can not show at front end
                 outputFiles.push(file);
             }
         } // for()
@@ -371,6 +373,7 @@ wss.on('connection', (ws) => {
             id = data.id;
             const cwd = `./exestation/${id}`;
             try {
+                // 要放甚麼input檔案進去firejail (要改在這裡改)
                 const regex = /^(input|pairs)\d{3}\.(txt|bin)$/;
                 await fs.promises.mkdir(cwd);
                 const files = await fs.promises.readdir(`./DS_exe/${homework}`);
@@ -381,7 +384,7 @@ wss.on('connection', (ws) => {
                 }
 
                 // 初始化虛擬終端
-                ptyProcess = pty.spawn('bash', ['-c', `firejail --quiet ./${project}`], {
+                ptyProcess = pty.spawn('bash', ['-c', `firejail --quiet sh -c "ulimit -s 16384 && ./${project}"`], {
                     name: 'xterm-color',
                     cols: 80,
                     rows: 30,

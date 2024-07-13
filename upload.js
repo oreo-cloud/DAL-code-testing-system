@@ -49,6 +49,7 @@ async function check_file_existence() {
     const all_files = await fs.promises.readdir(path.join('DS_source', 'upload'));
     regex_input = /^(input|pairs)\d{3}\.(txt|bin)$/;
     regex_cpp_soft = /(DEMO[a-z]{1}|QUIZ[a-z]{1}).cpp$/;
+    flex_regex_cpp_soft = /(DEMO|QUIZ).cpp$/;
     regex_cpp_speed = /(SLOW|BEST)[a-z]{1}.cpp/;
 
     // 分類檔案
@@ -58,9 +59,34 @@ async function check_file_existence() {
             ;
         }
 
+        else if (flex_regex_cpp_soft.test(file)) {
+            // 檔名改成DEMOa.cpp, DEMOb.cpp
+            let new_file_name_a ;
+            let new_file_name_b ;
+
+            if (file === "DEMO.cpp" ) {
+                new_file_name_a = "DEMOa.cpp";
+                new_file_name_b = "DEMOb.cpp";
+            }
+
+            else if (file === "QUIZ.cpp") {
+                new_file_name_a = "QUIZa.cpp";
+                new_file_name_b = "QUIZb.cpp";
+            }
+
+            else {
+                throw new Error(`檔案格式錯誤: ${file}`);
+            }
+
+            await fs.promises.copyFile(path.join('DS_source', 'upload', file), path.join('DS_source', 'upload', new_file_name_a));
+            await fs.promises.copyFile(path.join('DS_source', 'upload', file), path.join('DS_source', 'upload', new_file_name_b));
+            await fs.promises.rm(path.join('DS_source', 'upload', file));
+        }
+
         else if (regex_cpp_soft.test(file)) {
             ;
         }
+        
 
         else if (regex_cpp_speed.test(file)) {
             ;
