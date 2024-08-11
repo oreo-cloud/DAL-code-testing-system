@@ -67,7 +67,6 @@ term.attachCustomKeyEventHandler(function (event) {
             .then(data => {
                 const files = JSON.parse(data.files);
 
-                
                 if ( arraysEqual(files, file_list) ) {
                     ;
                 }
