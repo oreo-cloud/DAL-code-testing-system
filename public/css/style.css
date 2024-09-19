@@ -4,7 +4,7 @@ html {
 
 body {
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(189, 188, 188, 0.4);
     overflow: hidden;
     /* 新增此行來隱藏整個頁面的滾軸 */
 }
@@ -43,7 +43,6 @@ body {
     color: white;
     font-family: din-round, sans-serif;
     font-size: 20px;
-    position: fixed;
     top: 13%;
     left: 2%;
     padding-top: 2vh;
@@ -64,7 +63,7 @@ body {
     box-sizing: border-box;
     color: #FFFFFF;
     cursor: pointer;
-    display: inline-block;
+    /* display: inline-block; */
     font-family: din-round, sans-serif;
     font-size: 15px;
     font-weight: 700;
@@ -124,7 +123,8 @@ body {
     position: relative;
     height: 75%;
     width: 70%;
-    background-color: rgb(91, 122, 120);
+    background-color: #77a3b8;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.475); 
     text-align: center;
     display: flex;
     /* 彈性排版 */
@@ -146,7 +146,7 @@ body {
     position: relative;
     top: 5%;
     height: 95%;
-    background-color: rgb(231 157 116);
+    background-color: rgb(242, 177, 177);
     text-align: center;
     display: flex;
     /* 彈性排版 */
@@ -168,7 +168,7 @@ body {
     position: relative;
     top: 5%;
     height: 95%;
-    background-color: rgb(255, 187, 109);
+    background-color: rgb(240, 220, 177);
     text-align: center;
     display: flex;
     flex-direction: column;

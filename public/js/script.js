@@ -3,18 +3,17 @@ const dom = parser.parseFromString('<!doctype html><body>' + encodedJson, 'text/
 const decodedJson = dom.body.textContent;
 const data = JSON.parse(decodedJson);
 
-console.log(data);
-
 let buttonsDiv = document.getElementById('buttons');
 let body_part = document.getElementById('body');
 buttonsDiv.innerHTML = '';
 let content_count = 1 ;
 
+
+
 for (const item of data) {
     // 側邊欄按鈕
     var button = document.createElement('button');
     button.className = 'button-19';
-
     buttonsDiv.appendChild(button);
 
     // 畫面中間內容
@@ -106,3 +105,34 @@ buttons.forEach(function (button, index) {  // index依序設定為0, 1, 2, 3, 4
         content.style.display = 'flex';
     });
 });
+
+
+var buttons = document.querySelectorAll('.button-19');
+for (const button of buttons) {
+    fetch('/DS/get_homework_status', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // 'data' : 從後端返回的作業狀態列表，格式假設 [{homework: "TEST1", action: "on"}, {homework: "TEST2", action: "off"}, ...]
+        for (const state of data) {
+            if (state.homework === button.textContent) {
+                if (state.action === 'off') {
+                    button.style.display = 'none';  // 隱藏按鈕
+                } else if (state.action === 'on') {
+                    button.style.display = 'block';  // 顯示按鈕
+                }
+
+                break;
+            }
+    
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+}

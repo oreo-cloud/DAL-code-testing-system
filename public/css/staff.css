@@ -210,3 +210,46 @@
 #logo:hover {
     opacity: 0.85;
 }
+
+.slide-switch { /* 橢圓形的背景 */
+    width: 50px;
+    height: 25px;
+    background-color: green;
+    border-radius: 25px;
+    position: relative;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); 
+    margin-right: 10px; /* 留出空間放在刪除按鈕左邊 */
+    cursor: pointer;
+    z-index: 1; /* 讓它在頁面其他元素之上 */
+}
+
+
+/* 圓形按鈕 */
+.slider-circle {
+    width: 23px;
+    height: 23px;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 1px;
+    left: 26px;
+    transition: left 0.3s ease;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 2;
+    
+}
+
+.slider-circle:hover {
+    opacity: 0.8;
+}
+
+/* 切換到左邊（啟用狀態） */
+.slide-switch.active {
+    background-color: red;
+}
+
+.slide-switch.active .slider-circle {
+    left: 1px;
+}

@@ -1,3 +1,4 @@
+
 // 顯示按鈕的函數
 function showButton() {
     var button = document.getElementById('send-btn');
@@ -106,6 +107,10 @@ const decodedJson = dom.body.textContent;
 const homework_list = JSON.parse(decodedJson);
 
 const delete_zone = document.getElementById('delete-zone');
+// 變數來保存所有的作業狀態
+let homeworkStatusMap = {};
+
+
 
 for ( const homework of homework_list ) {
     // 最外面一層，負責包住沒個作業跟刪除按鈕
@@ -116,6 +121,81 @@ for ( const homework of homework_list ) {
     const homework_div = document.createElement('div');
     homework_div.className = 'homework-item';
     homework_div.innerText = homework;
+    
+    // 滑動按鈕容器
+    const slideSwitch = document.createElement('div');
+    slideSwitch.className = 'slide-switch';
+
+    // 圓形按鈕
+    const sliderCircle = document.createElement('div');
+    sliderCircle.className = 'slider-circle';
+
+    // 將圓形按鈕放入滑動按鈕容器
+    slideSwitch.appendChild(sliderCircle);
+
+    let action = undefined;
+    fetch('/DS/get_homework_status')
+    .then(response => response.json())
+    .then(data => {
+        // 創建一個 map 來儲存作業狀態
+        for (const item of data) {
+            
+            if (item.homework === homework) {
+                action = item.action;
+            }
+        }
+
+        // 查詢每個 homework 的狀態，如果資料庫中沒有，設置為預設值 'on'
+        const currentStatus = action || 'on';  // 預設狀態為 'on'
+    
+        if (currentStatus === 'off') {
+            slideSwitch.classList.add('active');  // 如果狀態是 'off'，設置為 active
+        } else {
+            slideSwitch.classList.remove('active');  // 如果狀態是 'on'，保持非 active
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching homework status:', error);
+    });
+
+    
+
+    // 監聽滑動按鈕點擊事件
+    slideSwitch.addEventListener('click', function () {
+        this.classList.toggle('active'); // 切換滑動按鈕狀態
+         // 檢查是否為 active 狀態
+        let isActive = this.classList.contains('active');  // 判斷滑動按鈕是否為 active 狀態
+
+        // 決定要發送的動作 (隱藏或顯示)
+        let action;
+        if (isActive) {
+            action = "off";
+        } else {
+            action = "on";
+        }  // 如果是 active 狀態，發送 'hide'；否則發送 'show'
+        
+        // 當前要隱藏或顯示的作業名稱
+        fetch('/DS/homework_status', { //後端api
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ homeworkName: homework, action: action }),  // 發送 'on' 或 'off' 動作
+            }).then(response => {
+            if (response.ok) {
+                if (action === "off") {
+                    alert(`作業${homework} 已隱藏`);
+                } else {
+                    alert(`作業${homework} 已顯示`);
+                }
+            } else {
+                console.error('Error:', response.statusText);
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+
+    });
     
     // 垃圾桶圖示
     const trashcan = document.createElement('img');
@@ -145,6 +225,7 @@ for ( const homework of homework_list ) {
     delete_btn.appendChild(trashcan);
 
     container.appendChild(homework_div);
+    container.appendChild(slideSwitch);
     container.appendChild(delete_btn);
 
     delete_zone.appendChild(container);

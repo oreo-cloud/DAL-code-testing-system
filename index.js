@@ -12,6 +12,8 @@ const pty = require('node-pty');
 const { exec } = require('child_process');
 const uuid = require('uuid');
 const multer = require('multer');
+const { MongoClient } = require('mongodb');
+const client = new MongoClient(process.env.MONGODB_URI);
 
 const upload_tool = require('./upload');
 const AsyncQueue = require('./AsyncQueue');
@@ -164,6 +166,25 @@ app.post('/DS/download_output', async (req, res) => {
     }
 });
 
+app.get('/DS/get_homework_status', async (req, res) =>  {
+    const status_collection = client.db('dsds').collection('status');
+    try {
+        const all_hw_status = await status_collection.find({}, {projection: {_id: 0}}).toArray();
+        res.send(JSON.stringify(all_hw_status));
+    } catch (err) {
+        // res.send(err.message);
+    }
+
+});
+
+app.post('/DS/homework_status', async(req, res) => {
+    const status_collection = client.db('dsds').collection('status');
+    const hw = req.body.homeworkName;
+    const action = req.body.action;
+    await status_collection.updateOne({ homework: hw }, { $set: { action: action } }, { upsert: true });
+    res.send();
+}); 
+
 app.post('/DS/get_output', async (req, res) => {
     // { "id": "132138434613" }
     // 輸出檔格式(JSON): output_*.txt
@@ -281,6 +302,9 @@ app.post('/upload', upload, async (req, res) => {
         const all_promise = await upload_tool.execute( "DS_source", homeworkName ); // 建立編譯promises
         const asyncQueue = new AsyncQueue();
         await asyncQueue.processQueue(all_promise); // 開始編譯
+        
+        const status_collection = client.db('dsds').collection('status');
+        await status_collection.updateOne({ homework: homeworkName }, { $set: { action: 'on' } }, { upsert: true });
         res.send('upload demo complete');
     }
     catch (err) {
@@ -293,6 +317,9 @@ app.post('/delete', async (req, res) => {
     try {
         await fs.promises.rm(path.join('DS_exe', homeworkName), { recursive: true });
         await fs.promises.rm(path.join('DS_source', homeworkName), { recursive: true });
+        // 刪掉資料庫的內容
+        const status_collection = client.db('dsds').collection('status');
+        await status_collection.deleteOne({ homework: homeworkName });
         res.send('delete complete');
     } catch (err) {
         res.send(err.message);
@@ -349,6 +376,7 @@ app.post('/get_files' , async (req, res) => {
 
 });
 
+
 // 使用http模塊創建伺服器，並將Express應用作為請求處理器
 const server = http.createServer(app);
 
@@ -358,13 +386,15 @@ wss.on('connection', (ws) => {
     let ptyProcess = null;
     var exit = false;
     var id = null;
+    const inputs = [];
+    let realMsg = undefined;
 
     ws.on('message', async (message) => {
         if (exit) {
             ws.close();
             return;
         }
-
+        
         if (!ptyProcess) {
             // 解析收到的消息
             const data = JSON.parse(message);
@@ -372,6 +402,7 @@ wss.on('connection', (ws) => {
             const homework = data.homework;
             id = data.id;
             const cwd = `./exestation/${id}`;
+            
             try {
                 // 要放甚麼input檔案進去firejail (要改在這裡改)
                 const regex = /^(input|pairs)\d{3}\.(txt|bin)$/;
@@ -397,12 +428,25 @@ wss.on('connection', (ws) => {
                 });
 
                 // 監聽ptyProcess的退出事件
-                ptyProcess.on('exit', () => {
+                ptyProcess.on('exit', async () => {
                     ws.send('程式已退出');
+                    const currentDate = new Date();
+                    const stringTime = currentDate.toLocaleString('en-US', {
+                        timeZone: 'Asia/Taipei'
+                    });
+
+                    const log_collection = client.db('dsds').collection('log');
+
+                    await log_collection.insertOne({
+                        time:   stringTime,
+                        homework:   homework,
+                        select: project,
+                        content: realMsg === undefined ? 'without input (Irregular operations)' : realMsg
+                    });
+                    
                     exit = true;
                 });
 
-                
             }
 
             catch {
@@ -411,6 +455,9 @@ wss.on('connection', (ws) => {
 
         } else {
             // 將客戶端消息傳遞給虛擬終端
+            const decodedMessage = Buffer.from(message, 'base64').toString('utf-8');
+            inputs.push(decodedMessage);
+            realMsg = inputs.join("");
             ptyProcess.write(message);
         }
     });

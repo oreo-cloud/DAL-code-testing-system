@@ -1,5 +1,10 @@
-node_modules/*
-DS_exe/*
-DS_source/*
-exestaion/*
+# Node.js
+node_modules/
+
+# Environment variables
 .env
+
+# Directories
+DS_exe/
+DS_source/
+exestaion/
