@@ -109,6 +109,9 @@ buttons.forEach(function (button, index) {  // index依序設定為0, 1, 2, 3, 4
 
 var buttons = document.querySelectorAll('.button-19');
 for (const button of buttons) {
+   
+    button.style.display = 'none';// 將按鈕初始設為隱藏
+    
     fetch('/DS/get_homework_status', {
         method: 'GET',
         headers: {

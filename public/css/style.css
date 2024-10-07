@@ -139,7 +139,10 @@ body {
     padding-right: 20px;
     padding-bottom: 20px;
     /* 新增此行來添加滾輪 */
+    
+    
     border-radius: 10px;
+    
 }
 
 .a_bar {
