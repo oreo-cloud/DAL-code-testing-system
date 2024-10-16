@@ -1,4 +1,4 @@
-FROM node:lts
+FROM node:18.20.4
 
 # 安裝OpenJDK來執行Java應用
 RUN apt-get update && \

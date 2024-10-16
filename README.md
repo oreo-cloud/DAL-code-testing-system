@@ -20,4 +20,7 @@ Data Structure Display System (DSDS)
    
    NUMBER_OF_CONCURRENT_TASKS = 
 
+   #mongo db connection string
+   MONGODB_URI =
+
 ![dsds](https://github.com/oreo-cloud/DAL-code-testing-system/assets/80167467/51c94826-eff9-424b-848e-149794955b8f)

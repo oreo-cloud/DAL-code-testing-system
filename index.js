@@ -127,7 +127,7 @@ app.post('/DS/download_output', async (req, res) => {
         const zipPath = path.join(__dirname, 'exestation', id + '.zip');
         const files = await fs.promises.readdir(directoryPath);
         // 找到要給同學下載的檔案 ( 要更改在這裡改 )
-        const outputSyntax = /^(output|pairs|order|select|bubble|merge|quick|radix)\d{3}\.(txt|adj|cnt|inf)$/;
+        const outputSyntax = /^(output|pairs|order|select|bubble|merge|quick|radix|copy)\d{3}(_\d{3})?\.(txt|adj|cnt|inf)$/;
         const outputFiles = files.filter(file => outputSyntax.test(file));
         const outputPaths = outputFiles.map(file => path.join(directoryPath, file));
 
