@@ -76,7 +76,7 @@ var myDropzone = new Dropzone("#upload-widget", {
         });
 
         this.on("successmultiple", function (files, response) {
-            console.log(response);
+            // console.log(response);
 
             if (response !== "upload demo complete") {
                 // 伺服器返回了一個錯誤訊息
@@ -111,7 +111,6 @@ const delete_zone = document.getElementById('delete-zone');
 let homeworkStatusMap = {};
 
 
-
 for ( const homework of homework_list ) {
     // 最外面一層，負責包住每個作業跟刪除按鈕
     const container = document.createElement('div');
@@ -136,10 +135,20 @@ for ( const homework of homework_list ) {
  
     // 彈跳視窗
     const modelBox = document.createElement('div');
-    modelBox.id = 'datePickermodel';
+    modelBox.id = `datePickermodel_${homework}`;
     modelBox.className = 'model-box';
 
     document.body.appendChild(modelBox);
+
+    document.addEventListener('click', function(event) {
+        const displayStyle = window.getComputedStyle(modelBox).display;
+        if (displayStyle === 'block') {
+            if (!modelBox.contains(event.target)) {
+                // 點擊發生在 modelbox 之外，關閉 modelbox
+                modelBox.style.display = 'none';
+            }
+        }
+    });
 
     // 新增叉叉按鈕
     const closeButton = document.createElement('button');
@@ -355,7 +364,10 @@ for ( const homework of homework_list ) {
 
     scheduleBtn.onclick = function() {
         if (modelBox.style.display === 'none') {
-            modelBox.style.display = 'block';
+            setTimeout(() => {
+                modelBox.style.display = 'block';
+            }, 100);
+            
         }
 
         else {
@@ -462,7 +474,6 @@ for ( const homework of homework_list ) {
                 });
             }
 
-            console.log(`data.start_time: ${data.start_time}`);
             const start_time = data.start_time || "Select Start Time";
             const end_time = data.end_time || "Select End Time";
     
@@ -474,9 +485,9 @@ for ( const homework of homework_list ) {
                     time_24hr: true,
                     defaultDate: start_time !== "Select Start Time" ? start_time : null,
                     onChange: validateDates,
-                    onClose: function (selectedDates, dateStr) {
-                        console.log('Date 1 selected:', dateStr);
-                    }
+                    // onClose: function (selectedDates, dateStr) {
+                    //     console.log('Date 1 selected:', dateStr);
+                    // }
                 });
                 datePicker1.placeholder = start_time;
             }
@@ -488,9 +499,9 @@ for ( const homework of homework_list ) {
                     time_24hr: true,
                     defaultDate: end_time !== "Select End Time" ? end_time : null,
                     onChange: validateDates,
-                    onClose: function (selectedDates, dateStr) {
-                        console.log('Date 2 selected:', dateStr);
-                    }
+                    // onClose: function (selectedDates, dateStr) {
+                    //     console.log('Date 2 selected:', dateStr);
+                    // }
                 });
                 datePicker2.placeholder = end_time;
             }
@@ -566,3 +577,5 @@ for ( const homework of homework_list ) {
 
     delete_zone.appendChild(container);
 }
+
+

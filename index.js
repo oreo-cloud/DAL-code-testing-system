@@ -491,6 +491,8 @@ app.post('/delete', async (req, res) => {
         // 刪掉資料庫的內容
         const status_collection = client.db('dsds').collection('status');
         await status_collection.deleteOne({ homework: homeworkName });
+        const schedule_collection = client.db('dsds').collection('schedule');
+        await schedule_collection.deleteMany({ homework: homeworkName });
         res.send('delete complete');
     } catch (err) {
         res.send(err.message);
