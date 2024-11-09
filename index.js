@@ -21,9 +21,12 @@ const AsyncQueue = require('./AsyncQueue');
 // find path
 const fs = require('fs');
 const path = require('path');
+const { createCipheriv } = require('crypto');
+const { start } = require('repl');
 
 const port = 3000;
 
+// 將程式碼轉換成utf-8
 async function transcode(filename) {
     const encoding = chardet.detectFileSync(filename); // 檢測編碼
     const regex = /\.bin$/; // bin檔不轉換
@@ -98,7 +101,7 @@ app.get('/DS/:homework/:project', (req, res) => {
     const filePath = path.join(__dirname, 'DS_exe', homework, project);
     const directoryPath = path.join(__dirname, 'DS_exe', homework);
     const id = uuid.v4() + Date.now();
-    
+
     fs.access(filePath, fs.constants.F_OK, (err) => {
         if (err) {
             res.send('Invalid project');
@@ -127,7 +130,7 @@ app.post('/DS/download_output', async (req, res) => {
         const zipPath = path.join(__dirname, 'exestation', id + '.zip');
         const files = await fs.promises.readdir(directoryPath);
         // 找到要給同學下載的檔案 ( 要更改在這裡改 )
-        const outputSyntax = /^(output|pairs|order|select|bubble|merge|quick|radix|copy)\d{3}(_\d{3})?\.(txt|adj|cnt|inf)$/;
+        const outputSyntax = /^(output|pairs|order|select|bubble|merge|quick|radix|copy)\d{3}(_\d{3})*\.(txt|adj|cnt|inf)$/;
         const outputFiles = files.filter(file => outputSyntax.test(file));
         const outputPaths = outputFiles.map(file => path.join(directoryPath, file));
 
@@ -166,25 +169,189 @@ app.post('/DS/download_output', async (req, res) => {
     }
 });
 
+// 獲得作業的狀態( 開或關 )，用來決定前端要不要顯示作業
 app.get('/DS/get_homework_status', async (req, res) =>  {
     const status_collection = client.db('dsds').collection('status');
+    const schedule_collection = client.db('dsds').collection('schedule');
     try {
         const all_hw_status = await status_collection.find({}, {projection: {_id: 0}}).toArray();
-        res.send(JSON.stringify(all_hw_status));
+        const res_hw = [];
+        for ( const hw of all_hw_status ) {
+            // 先確認作業在不在DS_exe裡面
+            try {
+                const hwDirPath = path.join('DS_exe', hw.homework);
+                await fs.promises.access(hwDirPath) ;
+    
+                // 如果在DS_exe裡面，再確認有沒有符合規則
+                const status = await status_collection.findOne({ homework: hw.homework });
+                const permanent_status = status.permanent;
+                const schedule_status = status.schedule;
+
+                if ( permanent_status === 'on' ) {
+                    res_hw.push({ homework: hw.homework, action: 'on' });
+                } else if ( schedule_status === 'on' ) {
+                    const schedules = await schedule_collection.find({ homework: hw.homework }).toArray();
+                    // 獲取當前時間
+                    const currentTime = new Date();
+
+                    // 調整為台灣時區的時間 (UTC+8)
+                    const taiwanOffset = 8 * 60; // 台灣的 UTC 偏移為 8 小時（分鐘計）
+                    const current_time = new Date(currentTime.getTime() + taiwanOffset * 60 * 1000);
+
+                    let is_on = false;
+                    for ( const schedule of schedules ) {
+                        const schedule_start = new Date(schedule.start);
+                        const schedule_end = new Date(schedule.end);
+                        
+                        if ( current_time > schedule_end ) {
+                            // 排程失效 (過期) 刪除
+                            await schedule_collection.deleteOne({ homework: hw.homework, start: schedule.start, end: schedule.end });
+                        }
+
+                        if ( current_time > schedule_start && current_time < schedule_end ) {
+                            res_hw.push({ homework: hw.homework, action: 'on' });
+                            is_on = true;
+                            break;
+                        }
+                    }
+
+                    if ( !is_on ) {
+                        res_hw.push({ homework: hw.homework, action: 'off' });
+                    }
+
+                } else {
+                    res_hw.push({ homework: hw.homework, action: 'off' });
+                }
+
+            }
+
+            catch {
+                ;
+            }
+        }
+        
+        res.send(JSON.stringify(res_hw));
     } catch (err) {
+        console.log(err);
         // res.send(err.message);
     }
 
 });
 
-app.post('/DS/homework_status', async(req, res) => {
-    const status_collection = client.db('dsds').collection('status');
-    const hw = req.body.homeworkName;
-    const action = req.body.action;
-    await status_collection.updateOne({ homework: hw }, { $set: { action: action } }, { upsert: true });
-    res.send();
-}); 
+app.post('/DS/delete_schedule', async (req, res) => {
+    const homeworkName = req.body.homeworkName;
+    const start = req.body.start;
+    const end = req.body.end;
+    const schedule_collection = client.db('dsds').collection('schedule');
 
+    try {
+        await schedule_collection.deleteOne({ homework: homeworkName, start: start, end: end });
+        res.send({msg: "delete schedule success"});
+    } catch {   
+        res.send({msg: "delete schedule failed"});
+    }
+});
+
+app.post('/DS/get_status', async (req, res) => {
+    const homeworkName = req.body.homeworkName;
+    const db = client.db('dsds');
+    const status_collection = db.collection('status');
+    const schedule_collection = db.collection('schedule');
+
+    try {
+        const permanent_switch = (await status_collection.findOne({ homework: homeworkName })).permanent;
+        const schedule_switch = (await status_collection.findOne({ homework: homeworkName })).schedule;
+        const schedules = await schedule_collection.find({ homework: homeworkName }).toArray();
+        
+    
+        const result = {
+            permanent_switch: permanent_switch,
+            schedules_switch: schedule_switch,
+            schedules: schedules.map(schedule => ({
+                start: schedule.start,
+                end: schedule.end
+            }))
+        };
+    
+        res.send(result);
+    }
+
+    catch {
+        res.send({ error: "Homework undefined." });
+    }
+});
+
+async function isInsideInterval(start_date, end_date, schedule_start, schedule_end) {
+
+    start_date = new Date(start_date);          // start_A  start_B
+    end_date = new Date(end_date);              // end_A    end_B
+    schedule_start = new Date(schedule_start);  // start_B  start_A
+    schedule_end = new Date(schedule_end);      // end_B    end_A
+    // end_A ≥ start_B 且 end_B ≥ start_A
+
+    if ( end_date >= schedule_start && schedule_end >= start_date ) {
+            return true;
+    } else if ( schedule_end >= start_date && end_date >= schedule_start ) {
+            return true;
+
+    } else {
+        return false;
+    }
+} 
+
+// request need to send two dates that follows a certain format
+// something like this: 
+// FROM 2024/10/22, 10:00
+// TILL 2024/10/22, 13:00
+// current way of implementation: input
+// hw_name correspond to status database
+app.post('/DS/set_schedule', async(req, res) => {
+    try {
+        const schedule_collection = client.db('dsds').collection('schedule');
+        const status_collection = client.db('dsds').collection('status');
+        const start_date = req.body.start
+        const end_date = req.body.end
+        const hw_name = req.body.homeworkName
+        const permanent_switch = req.body.permanent_switch;
+        const schedule_switch = req.body.schedules_switch;
+
+
+        if ( start_date !== "" && end_date !== "" ) {
+            const timeArray = [];
+            timeArray.push(start_date);
+            timeArray.push(end_date);
+            
+            let old_schedule = []
+            try {
+                old_schedule = await schedule_collection.find({ homework: hw_name }).toArray();
+            } catch {
+                ;
+            }
+
+            for ( const schedule of old_schedule ) {
+                const [schedule_start, schedule_end] = [schedule.start, schedule.end];
+                if ( (await isInsideInterval(start_date, end_date, schedule_start, schedule_end)) ) {
+                    res.send({msg: "Time interval is overlapped with other schedule"});
+                    return;
+                }
+            }
+
+            await schedule_collection.insertOne({ homework: hw_name, start: start_date, end: end_date }, { upsert: true });
+
+        }
+
+        await status_collection.updateOne({ homework: hw_name }, { $set: { permanent: permanent_switch, schedule: schedule_switch } }, { upsert: true });
+
+        res.send({msg: "Schedule Set!"})
+    }
+
+    catch (err) {
+        res.send(`Error: ${err.message}`);
+    }
+});
+
+
+// 將程式碼生成的檔案傳給前端
 app.post('/DS/get_output', async (req, res) => {
     // { "id": "132138434613" }
     // 輸出檔格式(JSON): output_*.txt
@@ -216,6 +383,7 @@ app.post('/DS/get_output', async (req, res) => {
 
 });
 
+// 將程式碼生成的檔案內容傳給前端，前端要顯示檔案內容
 app.post('/DS/get_file_content', (req, res) => {
     // 前端傳送 { "id": "132138434613", "filename": "output1.txt" }
     // 這裡要讀取檔案內容並傳給前端
@@ -250,6 +418,7 @@ const demo_code_storage = multer.diskStorage({
 
 var upload = multer({ storage: demo_code_storage }).any();
 
+// 老師上傳作業時，將檔案上傳到DS_source資料夾，在編譯成exe檔放到DS_exe資料夾
 app.post('/upload', upload, async (req, res) => {
     const homeworkName = req.body.homeworkName;
     const path_to_source_dir = path.join('DS_source', homeworkName);
@@ -304,7 +473,8 @@ app.post('/upload', upload, async (req, res) => {
         await asyncQueue.processQueue(all_promise); // 開始編譯
         
         const status_collection = client.db('dsds').collection('status');
-        await status_collection.updateOne({ homework: homeworkName }, { $set: { action: 'on' } }, { upsert: true });
+        await status_collection.updateOne({ homework: homeworkName }, { $set: { action: 'on', permanent: 'on', schedule: 'off' } }, { upsert: true });
+
         res.send('upload demo complete');
     }
     catch (err) {
@@ -312,6 +482,7 @@ app.post('/upload', upload, async (req, res) => {
     }
 });
 
+// 刪除作業
 app.post('/delete', async (req, res) => {
     const homeworkName = req.body.homeworkName;
     try {
@@ -326,6 +497,7 @@ app.post('/delete', async (req, res) => {
     }
 });
 
+// 檢查是否已經登入
 function checkAuthentication(req, res, next) {
     if (req.session.isAuthenticated) {
         next(); // 用戶已登入，繼續執行下一個路由處理函數
@@ -363,6 +535,7 @@ app.get('/staffonly', checkAuthentication, async (req, res) => {
     res.render('staffonly', {homeworklist: JSON.stringify(homework)});
 });
 
+// 回傳特定資料夾的所有檔案
 app.post('/get_files' , async (req, res) => {
     const id = req.body.id;
     try {
@@ -382,12 +555,30 @@ const server = http.createServer(app);
 
 const wss = new WebSocket.Server({ server, path: '/ws' });
 
-wss.on('connection', (ws) => {
+wss.on('connection', async (ws, req) => {
     let ptyProcess = null;
     var exit = false;
     var id = null;
     const inputs = [];
+    var string_inputs = [];
+    var detail_output = [];
     let realMsg = undefined;
+
+    const detail_log = client.db('dsds').collection('detail_log');
+
+    //在使用者結束後才寫進log裡面，但也是detail_log第一個的start time
+    const currentStartDate = new Date();
+    const startTime = currentStartDate.toLocaleString('en-US', {
+        timeZone: 'Asia/Taipei'
+    });
+
+    var detail_start = startTime;
+    var detail_start_Time = currentStartDate;
+
+    // IP 和 UserAgent
+    const web_uuid = uuid.v4();
+    const ipAddress = req.socket.remoteAddress;
+    const userAgent = req.headers['user-agent'];
 
     ws.on('message', async (message) => {
         if (exit) {
@@ -425,6 +616,7 @@ wss.on('connection', (ws) => {
 
                 ptyProcess.on('data', (data) => {
                     ws.send(data);
+                    detail_output.push(data);
                 });
 
                 // 監聽ptyProcess的退出事件
@@ -438,7 +630,8 @@ wss.on('connection', (ws) => {
                     const log_collection = client.db('dsds').collection('log');
 
                     await log_collection.insertOne({
-                        time:   stringTime,
+                        Start: startTime,
+                        End:   stringTime,
                         homework:   homework,
                         select: project,
                         content: realMsg === undefined ? 'without input (Irregular operations)' : realMsg
@@ -449,15 +642,48 @@ wss.on('connection', (ws) => {
 
             }
 
-            catch {
-                console.log('error');
+            catch (err){
+                console.log(`error: ${err}`);
             }
 
         } else {
             // 將客戶端消息傳遞給虛擬終端
             const decodedMessage = Buffer.from(message, 'base64').toString('utf-8');
+            // 在這邊檢測是否有enter，並加進detail_log裡面
+            // 這邊會一個一個char讀入，只要不是\n，字串相加，不然insertOne
+            if (decodedMessage !== '\r' && decodedMessage !== '\n') {
+                string_inputs.push(decodedMessage);
+            }
+            else {
+                const detail_end_Time = new Date();
+                const detail_endstamp = detail_end_Time.toLocaleString('en-US', {
+                    timeZone: 'Asia/Taipei'
+                });
+                await detail_log.insertOne({
+                    Web_UUID: web_uuid,
+                    UserAgent: userAgent,
+                    IP_Addr: ipAddress,
+                    Input_Start: detail_start,
+                    Input_End: detail_endstamp,
+                    Interval: (detail_end_Time - detail_start_Time),
+                    Input: string_inputs.join(''),
+                    Output: detail_output.join('')
+                })
+                // 下一個資料的開始輸入時間
+                const next_detail_start = new Date();
+                const next_detail_startstamp = next_detail_start.toLocaleString('en-US', {
+                    timeZone: 'Asia/Taipei'
+                });
+                detail_output = [];
+                string_inputs = [];
+                detail_start = next_detail_startstamp;
+                detail_start_Time = next_detail_start;
+            }
+
+            // 這邊是合起來的輸入
             inputs.push(decodedMessage);
             realMsg = inputs.join("");
+
             ptyProcess.write(message);
         }
     });

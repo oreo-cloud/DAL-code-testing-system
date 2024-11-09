@@ -17,6 +17,14 @@
     font-weight: bold;
 }
 
+/* 居中顯示文字 */
+.nav-bar-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
 .nav-bar-text{
     color: rgb(236, 233, 233);
     background-color: rgba(42, 56, 117, 0);
@@ -96,7 +104,7 @@
     top: 20vw;
     width: 5vw;
     height: auto;
-    z-index: 20;
+    z-index: 5;
     opacity: 1;
     visibility: visible;
     transition: visibility 0s, opacity 0.5s linear;
@@ -171,6 +179,188 @@
 
 }
 
+.schedule-btn {
+    cursor: pointer;
+    z-index: 6;
+}
+
+.ok-btn {
+    position: absolute;
+    bottom: 1px;
+    right: 10px;
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 6; /* Keep it above other content */
+}
+
+/* Specific positions for each button */
+#ForeverOnBtn {
+    right: 110px; /* Position it to the left of OKBtn */
+}
+
+#ForeverOffBtn {
+    right: 230px; /* Position it to the left of ForeverOnBtn */
+}
+
+#ForeverNullBtn {
+    right: 350px; /* Position it to the left of ForeverOnBtn */
+}
+
+/* Outline styles */
+.btn-outline-success {
+    background-color: transparent;
+    color: #28a745;
+    border: 2px solid #28a745;
+}
+
+.btn-outline-danger {
+    background-color: transparent;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+}
+
+.btn-outline-secondary {
+    background-color: transparent;
+    color: #6c757d; /* Secondary text color */
+    border: 2px solid #6c757d; /* Secondary border color */
+}
+
+/* Filled styles */
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #6c757d; /* Secondary filled color */
+    color: white;
+}
+
+
+/* 排程框框 */
+.model-box {
+    width: 60vw;
+    height: 90vh;
+    padding: 30px;
+    background-color: #ffe0b2;
+    border: 3px solid #a9a9a9;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* 水平和垂直居中 */
+    display: none; /* Initially hidden */
+    z-index: 6;
+    gap: 20px;
+}
+
+.switch-row {
+    display: flex;      
+    margin-left: 42px;
+    padding: 10px;   
+    justify-content: flex-start;
+    align-items: center;
+    width: 30%;
+}
+
+/* 選擇時程框框 */
+.select-box {
+    position: absolute;
+    width: 50vw;
+    height: 60vh;
+    background-color: #ffffff;
+    border: 3px solid #a9a9a9;
+    border-radius: 12px;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: pre-line;  /* 讀的到換行符號 */
+    padding: 20px;          /* 在文字的周圍加上20xp的間隔 */
+    display: flex;
+    flex-direction: column;            /* Arrange text and inputs horizontally */
+    gap: 10px;              /* 兩column之間的間隔 */
+}
+
+/* 排程選擇欄位 */
+.select-box input {
+    width: 85%; /* Width of the input boxes */
+    padding: 10px; /* Padding inside input */
+    border: 3px solid #181616; /* Border for input */
+    border-radius: 12px; /* Rounded corners for input */
+    box-sizing: border-box; /* Include padding and border in the total width */
+    align-self: flex-end;
+}
+
+/* 每個文字 + 輸入視為一個物件 */
+.select-box > .input-row {
+    display: flex;                   
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 日期錯誤提示紅字   */
+.date-error {
+    position:relative;
+    width: 100%;
+    text-align: right;
+}
+
+.disable-part {
+    position: absolute;
+    display: none;
+    width: 53.5vw;
+    height: 72vh;
+    background-color: rgba(116, 106, 106, 0.5);
+    z-index: 30;
+    border-radius: 12px;
+    left: 3vw;
+}
+
+/* Table container with a fixed height and scrollable content */
+.table-container {
+    max-height: 300px;  /* Adjust the height as needed */
+    overflow-y: auto;   /* Make the content scrollable vertically */
+    margin-top: 20px;
+}
+
+/* Styling for the table */
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Table header styling */
+.schedule-table thead {
+    background-color: #f1f1f1;
+}
+
+.schedule-table th, .schedule-table td {
+    padding: 12px;
+    border: 1px solid #ccc;
+    text-align: center;
+    vertical-align: middle; /* 垂直置中 */
+}
+
+/* Alternate row shading for better readability */
+.schedule-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Optional: Hover effect for table rows */
+.schedule-table tr:hover {
+    background-color: #e9e9e9;
+}
+
 .delete-btn-mine {
     width: 30px;
     height: 30px;
@@ -198,13 +388,19 @@
     height: auto;
 }
 
+#logo-container {
+    margin-right: auto; /* 將 logo 靠左 */
+}
+
 #logo{
-    position: fixed;
+    position: relative;
     width:80px;
     height:auto;
     left: 0.5vw;
     top: -0.5vw;
     cursor: pointer;
+    margin-top: 10px;
+    
 }
 
 #logo:hover {
@@ -221,7 +417,8 @@
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); 
     margin-right: 10px; /* 留出空間放在刪除按鈕左邊 */
     cursor: pointer;
-    z-index: 1; /* 讓它在頁面其他元素之上 */
+    z-index: 7; /* 讓它在頁面其他元素之上 */
+    gap: 10px;
 }
 
 
@@ -237,7 +434,7 @@
     transition: left 0.3s ease;
     box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
     cursor: pointer;
-    z-index: 2;
+    z-index: 8;
     
 }
 
@@ -247,9 +444,52 @@
 
 /* 切換到左邊（啟用狀態） */
 .slide-switch.active {
-    background-color: red;
+    background-color: gray;
 }
 
 .slide-switch.active .slider-circle {
     left: 1px;
+}
+
+/* 新增 schedule-btn-mine 樣式 */
+.schedule-btn-mine {
+    width: 40px;
+    height: 40px;
+    margin-right: 2vh;
+    background-color: rgb(230, 191, 75); 
+    border: none;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 5;
+    transition: opacity 0.3s ease;
+}
+
+/* Schedule 按鈕中的圖片 */
+.schedule-icon {
+    width: 24px; /* 圖片寬度 */
+    height: 24px; /* 圖片高度 */
+}
+
+/* 滑鼠懸停效果 */
+.schedule-btn-mine:hover {
+    opacity: 0.7; /* 當滑鼠懸停時，按鈕變淡 */
+}
+/* 叉叉按鈕的樣式 */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: #ff0000; /* 滑鼠懸停時變為紅色 */
 }
