@@ -256,3 +256,108 @@ function download_file() {
     });
     
 }
+
+new_files = [];
+
+// 假設 API 位址為 /api/addItem
+async function get_new_input_file() {
+    try {
+        // 呼叫 API 並取得回應資料
+        fetch('/get_student_upload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ "id": id })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const files = JSON.parse(data.files);
+
+            if ( new_files.length === 0 ) {
+                // 第一次新增檔案
+                const user_input_hint = document.createElement('span');
+                user_input_hint.id = 'user-discription';
+                user_input_hint.textContent = '使用者檔案：';
+                document.getElementById('input').appendChild(user_input_hint);
+            }
+
+            for ( const file of files ) {
+                const fileName = file.filename;
+                
+        
+                // 使用正則表達式提取 input 後面的部分和 .txt 前面的部分
+                const match = fileName.match(/input(\d+)\.txt/);
+                if (match && new_files.includes(fileName) === false) {
+                    const extractedPart = match[1]; // 提取的部分
+                    new_files.push(fileName);
+        
+                    // 創建新的 <li> 元素
+                    const newItem = document.createElement('li');
+                    newItem.classList.add('file');
+                    newItem.textContent = extractedPart;
+                    newItem.style.color = 'rgba(255, 117, 117, 1)';
+        
+                    // 將新的 <li> 元素插入到目標元素底下
+                    document.getElementById('input').appendChild(newItem);
+                }
+            }
+        })
+
+    } catch (error) {
+        console.error('新增項目失敗：', error);
+    }
+}
+
+document.getElementById('file-upload').addEventListener('change', function(event) {
+    const files = event.target.files;
+    if (files.length === 1) {
+        const formData = new FormData();
+        console.log( files.length );
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            if (fileExtension === 'txt') {
+                formData.append('files', file);
+            } else {
+                alert(`${file.name} 不是文字檔案!!! ( 僅提供上傳.txt ).`);
+                return ; 
+            }
+        }
+
+        // const data = {
+        //     id: id,
+        //     project: project,
+        //     homework: homework,
+        //     files: formData
+        // }
+
+        // 添加其他數據到 FormData
+        formData.append('id', id);
+        formData.append('project', project);
+        formData.append('homework', homework);
+
+        fetch('/student_upload', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.text())
+        .then(text => {
+            if ( text === 'upload demo complete' ) {
+                alert('檔案上傳成功!!!');
+                setTimeout(() => {
+                    get_new_input_file();
+                }, 500);
+            }
+        })
+        .catch(error => {
+            alert('Error:', error);
+        });
+    } else if (files.length === 0) {
+        alert('未選擇任何檔案!!!');
+        // console.warn('No valid .txt files were selected.');
+    } else {
+        alert('僅能選擇一個檔案!!!');
+        // console.warn('Only one .txt file can be selected.');
+    }
+});

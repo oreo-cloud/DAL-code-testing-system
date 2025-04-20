@@ -215,6 +215,12 @@ body {
     font-weight: bold;
 }
 
+#user-discription {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
 .download {
     position: fixed;
     scale: 20%;
@@ -231,7 +237,7 @@ body {
 }
 
 .download.hide {
-    opacity: 0; /* 元素不可見 */
+    display: none; /* 顯示元素 */
     transition: opacity 0.5s ease-in-out, display 0.5s ease-in-out 0.5s; /* 使用 display 屬性延遲隱藏 */
 }
 

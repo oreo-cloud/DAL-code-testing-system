@@ -29,10 +29,21 @@
             <div class="input_file" id="input">
                 <span id="discription">可使用測資：</span>
             </div>
+            <label for="file-upload" class="upload-icon" style="left: 9vw;top: 80vh; position: fixed ;cursor: pointer; display: flex; align-items: center; flex-direction: column; width: 100px; z-index: 500; justify-content: center;">
+                <img
+                  src="/image/plus.png"
+                  alt="Upload"
+                  style="width: 48px; height: 48px; "
+                />
+                <span style="width: 100px ; text-align: center; color: white; margin-top: 4px">上傳檔案</span>
+            </label>
+            <input type="file" id="file-upload" style="display: none;" multiple />
         </div>
+
         <div class="col" >
             <div id="terminal" style="margin-right:2vw"></div>
         </div>
+        
         <div class="col">
             <div class="output_file">
                 <span>output file</span>

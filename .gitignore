@@ -1,3 +1,7 @@
+# Files
+package-lock.json
+package.json
+
 # Node.js
 node_modules/
 
@@ -5,6 +9,12 @@ node_modules/
 .env
 
 # Directories
+exestation/
 DS_exe/
 DS_source/
-exestaion/
+uploads/
+User_Containers/
+temp/
+
+# Database
+mysql.sql

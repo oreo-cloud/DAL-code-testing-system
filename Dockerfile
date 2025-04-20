@@ -1,18 +1,12 @@
-FROM node:18.20.4
+FROM ubuntu:18.04
 
 # 安裝OpenJDK來執行Java應用
 RUN apt-get update && \
-    apt-get clean;
+    apt-get install -y bash
+
+RUN mkdir -p /ExeFile
     
 # 創建應用目錄
-WORKDIR /usr/src/app
+WORKDIR /ExeFile
 
-# 將所有檔案複製到容器中
-COPY . .
-
-RUN npm install
-RUN apt-get install firejail -y
-
-EXPOSE 3000
-
-CMD ["npm", "start"]
+CMD ["bash"]

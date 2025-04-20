@@ -4,7 +4,6 @@ const path = require('path');
 const uuid = require('uuid');
 const { exec } = require('child_process');
 
-
 async function execute(input_dir, homework_name) {
     const all_promise = [];
 
@@ -49,7 +48,7 @@ async function check_file_existence() {
     const all_files = await fs.promises.readdir(path.join('DS_source', 'upload'));
     regex_input = /^(input|pairs)\d{3}\.(txt|bin)$/;
     regex_cpp_soft = /(DEMO[a-z]{1}|QUIZ[a-z]{1}).cpp$/;
-    flex_regex_cpp_soft = /(DEMO|QUIZ).cpp$/;
+    flex_regex_cpp_soft = /(DEMO|QUIZ|TEST).cpp$/;
     regex_cpp_speed = /(SLOW|BEST)[a-z]{1}.cpp/;
 
     // 分類檔案
@@ -72,6 +71,11 @@ async function check_file_existence() {
             else if (file === "QUIZ.cpp") {
                 new_file_name_a = "QUIZa.cpp";
                 new_file_name_b = "QUIZb.cpp";
+            }
+
+            else if (file === "TEST.cpp") {
+                new_file_name_a = "TESTa.cpp";
+                new_file_name_b = "TESTb.cpp";
             }
 
             else {
